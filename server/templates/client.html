@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block additional_css %} {% endblock %}
+
+{% block header_text %} {{client.name}}{% endblock %}
+
+{% block container %}
+<form class="form-client" role="form" method="POST" action="/clients/id/{{client.client_id}}/">
+    <div class="form-group">
+        <label>Client ID</label>
+        <p>{{client.client_id}}</p>
+    </div>
+    <div class="form-group">
+        <label>Client Secret</label>
+        <p>{{client.client_secret}}</p>
+    </div>
+    <div class="form-group">
+        <label>Name</label>
+        <input type="text" name="name" class="form-control" value="{{client.name}}" required autofocus />
+    </div>
+    <div class="form-group">
+        <label>Redirect URIs</label>
+        <textarea name="_redirect_uris" class="form-control" placeholder="Redirect URIs (whitespace seperated)" rows="3" required>{{client._redirect_uris}}</textarea>
+    </div>
+    <div class="form-group">
+        <label>
+            <input type="checkbox" name="command_line" value="true" {% if client.command_line %}checked{% endif %}> Command Line Tool
+        </label>
+    </div>
+
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <div class="form-group">
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Update Client</button>
+    </div>
+</form>
+<form class="form-client" role="form" method="POST" action="/clients/id/{{client.client_id}}/delete/">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <div class="form-group">
+        <button class="btn btn-lg btn-danger btn-block" type="submit">Delete Client</button>
+    </div>
+</form>
+<a href="/clients/" class="btn btn-lg btn-default btn-block">Back</a>
+{% endblock %}

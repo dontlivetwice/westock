@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block additional_css %} {% endblock %}
+
+{% block header_text %} Login {% endblock %}
+
+{% block container %}
+<form class="form-signin" role="form" method="POST" action="/">
+    
+    <div class="form-group">
+    <input type="text" name="username" class="form-control" placeholder="username or email" required autofocus>
+    </div>
+    <div class="form-group">
+    <input type="password" name="password" class="form-control" placeholder="Password" required>
+    </div>
+
+    <input type="hidden" name="redirect_uri" value="{{ redirect_uri }}" />
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <div class="form-group">
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    </div>
+</form>
+{% endblock %}

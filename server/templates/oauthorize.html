@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block header_text %}
+{% if autoconfirm %}Redirecting...{% else %}<strong>{{client.name }}</strong> would like to access your data {% endif %}
+{% endblock %}
+
+{% block container %}
+<div {% if autoconfirm %} class="hide" {% endif %}>
+<p class="help-block"> You will be redirected to {{ redirect_uri }} to complete authorization.</p>
+<form class="form-auth" role="form" method="POST" action="/oauth/authorize/">
+    <input type="hidden" name="client_id" value="{{client_id}}">
+    <input type="hidden" name="redirect_uri" value="{{redirect_uri}}">
+    <input type="hidden" name="scope" value="{{scope}}">
+    <input type="hidden" name="confirm" value="yes">
+    <input type="hidden" name="response_type" value="code">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    {% if state %}
+        <input type="hidden" name="state" value="{{ state }}" />
+    {% endif %}
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" name="remember" value="yes" checked> Remember
+        </label>
+    </div>
+    <input type="hidden" id="redirect" name="autoconfirm" value="{{autoconfirm}}" />
+    <div class="form-group">
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Authorize</button>
+    </div>
+</form>
+</div>
+{% endblock %}
+
+{% block js %}
+    {{ super() }}
+    <script src="/static/js/oauthorize.js"></script>
+{% endblock %}

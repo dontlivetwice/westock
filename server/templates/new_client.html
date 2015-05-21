@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block additional_css %} {% endblock %}
+
+{% block header_text %} New Client{% endblock %}
+
+{% block container %}
+<form class="form-client" role="form" method="POST" action="/clients/new/">
+    <div class="form-group">
+        <label>Name</label>
+        <input type="text" name="name" class="form-control" placeholder="name" required autofocus />
+    </div>
+    <div class="form-group">
+        <label>Redirect URIs</label>
+        <textarea name="_redirect_uris" class="form-control" placeholder="Redirect URIs (whitespace seperated)" rows="3" required></textarea>
+    </div>
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" name="command_line" value="true"> Command Line Tool
+        </label>
+    </div>
+
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <div class="form-group">
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Create Client</button>
+    </div>
+</form>
+{% endblock %}

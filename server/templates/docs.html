@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block additional_css %} {% endblock %}
+
+{% block header_text %}API Documentation{% endblock %}
+
+{% block container %}
+<div class="list-group">
+    {% for api_endpoint in docs %}
+      <div class="list-group-item">
+        <h4 class="list-group-item-heading">{{ api_endpoint.path }} 
+            <span class="badge" data-toggle="tooltip" title="Requires {{ api_endpoint.scope }} scope">{{ api_endpoint.scope }}</span></h4>
+        <dl class="list-group-item-text">
+            Parameters:
+            {% if not parameters %}
+                None
+            {% else %}
+                {% for parameter in parameters %}
+                    <dt>{{ parameter.name }}</dt>
+                    <dd>{{ parameter.description }}</dd>
+                {% endfor %}
+            {% endif %}
+        </dl>
+        <p class="list-group-item-text docstring">{{ api_endpoint.docs }}</p>
+      </div>
+    {% endfor %}
+</div>
+{% endblock %}
