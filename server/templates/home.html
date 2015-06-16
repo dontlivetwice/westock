@@ -1,14 +1,67 @@
 {% extends 'base.html' %}
 
+
 {% block container %}
-<div class="list-group">
-    <span class="list-group-item active">Command Line Tokens</span>
-    <a class="list-group-item" href="/command-line-tokens/new/">Get Token</a>
-    <a class="list-group-item" href="/command-line-tokens/">Existing Tokens</a>
-</div>
-<div class="list-group">
-    <span class="list-group-item active">Developer</span>
-    <a class="list-group-item" href="/clients/">Your Clients</a>
-    <a class="list-group-item" href="/docs/">API Documentation</a>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title> WeStock home page </title>
+  </head>
+  <body>
+
+    {% block login %}
+        <div id="navbar" class="navbar-collapse collapse">
+          <form class="navbar-form navbar-right" role="form" method="POST" action="/">
+            <button type="submit" name="action" value="sign-up" class="btn btn-success">Sign up</button>
+            <button type="submit" name="action" value="log-in" class="btn btn-success">Log in</button>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          </form>
+        </div><!--/.navbar-collapse -->
+    {% endblock %}
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="westock">
+      <div class="container">
+        <h1>Welcome to WeStock!</h1>
+        <p>WeStock is a social trading platform. Get alerted or notified before your stocks earnings, get insights on trading from friends and professional traders.</p>
+        <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="col-md-4">
+          <h2>Get alerted before your stocks earnings</h2>
+          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+          <h2>Get notified when your stocks move by x%</h2>
+          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+       </div>
+        <div class="col-md-4">
+          <h2>Be social...</h2>
+          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+        </div>
+      </div>
+
+      <hr>
+
+      <footer>
+        <p>&copy; WeStock 2015</p>
+      </footer>
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="static/js/bootstrap.min.js"></script>
+  </body>
+</html>
+
 {% endblock %}

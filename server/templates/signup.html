@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block container %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>WeStock Sign up page</title>
+
+
+    {% block css %}
+    <link href="/static/css/signin.css" rel="stylesheet">
+    {% endblock %}
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <form class="form-signin" role="form" method="POST">
+        <h2 class="form-signin-heading">Join WeStock</h2>
+            <div class="form-group">
+              <input type="text" name="username" placeholder="Username" class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="text" name="firstname" placeholder="First Name" class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="text" name="lastname" placeholder="Last Name" class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="text" name="email" placeholder="Email" class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="password" name="password" placeholder="Password" class="form-control">
+            </div>
+
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
+      </form>
+
+    </div> <!-- /container -->
+  </body>
+</html>
+{% endblock %}

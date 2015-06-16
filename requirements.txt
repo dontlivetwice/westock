@@ -6,4 +6,5 @@ pyopenssl
 raven==4.2.3
 blinker==1.2
 tornado==4.0.2
+bcrypt==1.0.1
 WTForms

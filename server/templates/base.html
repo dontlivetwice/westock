@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -7,53 +8,36 @@
     <meta name="author" content="">
     <link rel="icon" href="/static/img/favicon.ico">
 
-    <title>{% block title %}StockInterest{% endblock %}</title>
-
     <!-- Bootstrap core CSS -->
-    {% block css %}
     <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    {% block css %}
     <link href="/static/css/base.css" rel="stylesheet">
     {% endblock %}
 
 </head>
 <body>
-{% block body %}
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-6">
-                <h1 class="logo"><a href="/"><img src="/static/images/pinterest.png"></img>StockInterest</a></h1>
-            </div>
-            <div class="col-xs-6">
-                {% if get_current_user() %}
-                <p class="text-right user-nav">{{ get_current_user() }} <a href="/logout/" class="btn btn-danger btn-xs">Logout</a></p>
-                {% endif %}
-            </div>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">WeStock</a>
         </div>
-        <div class="row">
-            <div class="col-sm-offset-2 col-sm-8 col-md-6 col-md-offset-3">
-                <div class="content-box">
-                <h2 class="header-text"><small>{% block header_text %}{% endblock %}</small></h2>
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                  {% if messages %}
-                    {% for category, message in messages %}
-                      <div class="alert alert-{{ category }} alert-dismissible" role="alert">
-                        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                        {{ message }}
-                        </div>
-                    {% endfor %}
-                  {% endif %}
-                {% endwith %}
-                {% block container %}
-                {% endblock %}
-                </div>
-            </div>
-        </div>
-    </div>
+        {% block login %}
+        {% endblock %}
+      </div>
+    </nav>
 
     {% block js %}
         <script src="/static/js/jquery-2.1.1.min.js"></script>
         <script src="/static/js/bootstrap.min.js"></script>
     {% endblock %}
+
+{% block container %}
 {% endblock %}
 </body>
 </html>

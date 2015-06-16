@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block login %}
+        {% if get_current_user() %}
+        <p class="text-right user-nav">{{ get_current_user() }} <a href="/logout/" class="btn btn-success">Logout</a></p>
+        {% endif %}
+{% endblock %}
+
+{% block container %}
+{% set stocks = get_stocks_list() %}
+<br>
+<br>
+<br>
+
+<div class="stock-list">
+    {% if stocks|length %}
+	    {% for stock in stocks %}
+			{% if (loop.index % 3) == 0 %}
+			<div class="row">
+			{% endif %}
+		         <div class="stock col-md-4" data-stock-id="{{ stock.get('ticker') }}"  style="margin:10px">
+					<div class="panel panel-default">
+
+						<div class="panel-heading">
+							{{ stock.get('ticker') }}
+						</div>
+						<div class="panel-body">
+							{{ stock.get('name') }}
+						</div>
+						<div class="panel-body">
+							{{ stock.get('link') }}
+						</div>
+						<div class="panel-body">
+							{{ stock.get('time') }}
+						</div>
+					</div>
+		        </div>
+			{% if (loop.index % 3) == 0 %}
+			</div>
+			{% endif %}
+    {% endfor %}
+   {% else %}
+   		<h1>You have no stocks!</h1>
+   {% endif %}
+</div>
+{% endblock %}

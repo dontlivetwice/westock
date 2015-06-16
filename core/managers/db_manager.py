@@ -16,7 +16,7 @@ class DBManager(object):
         return ret
 
     def update_one(self, query):
-        ret = self.cursor.execute(self.UPDATE_TEMPLATE + query)
+        ret = self.cursor.execute(self.UPDATE_TEMPLATE + query)        
         self.db.commit()
         return ret
 
@@ -25,6 +25,16 @@ class DBManager(object):
 
         if ret:
             return self.cursor.fetchone()
+
+        return None
+
+    def get_many(self, query, limit=None):
+        ret = self.cursor.execute(self.SELECT_TEMPLATE + query)
+
+        if ret:
+            if limit:
+                return self.cursor.fetchmany(size=limit)
+            return self.cursor.fetchall()
 
         return None
 
