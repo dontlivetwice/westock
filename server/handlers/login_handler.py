@@ -8,13 +8,14 @@ from flask import session
 from settings import prod
 
 
-def login_user(username):
-    session['user'] = username
+def login_user(user_id, name):
+    session['user_id'] = user_id
+    session['name'] = name
     session['expires'] = int(time.time()) + prod.SESSION_EXPIRE_TIME
 
 
 def user_logout():
-    for key in ('user', 'expires'):
+    for key in ('user_id', 'expires', 'name'):
         del session[key]
 
 
@@ -33,5 +34,5 @@ def get_current_user():
     if 'expires' in session:
         if session['expires'] < time.time():
             user_logout()
-        return session.get('user')
+        return session.get('name')
     return None

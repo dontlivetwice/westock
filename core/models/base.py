@@ -1,3 +1,7 @@
+import core.managers.base_manager as base_manager
+
+managers = base_manager.ManagerSelector()
+
 
 class ModelValidationError(Exception):
     """Thrown when model validation fails."""
@@ -34,6 +38,7 @@ class ModelBaseType(type):
 
 class Model(object):
     __metaclass__ = ModelBaseType
+
     
     def _set_attributes(self, *args, **kwargs):
         if args:
@@ -110,3 +115,7 @@ class Model(object):
         except AttributeError:
             self._data_cache = dict()
         return self._data_cache
+
+    @classmethod
+    def unmutable_fields(cls):
+        return ['id']

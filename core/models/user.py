@@ -1,12 +1,9 @@
-from core.models.base import Model
+import core
 from core.models import fields
+from core.utils import password_utils
+import core.models.base as base
 
-from core.managers.stock_manager import StockManager
-from core.managers.db_manager import DBManager
-
-
-class User(Model):
-	stock_manager = StockManager()
+class User(core.models.base.Model):
 
 	DB_MAPPINGS = [
 		'id',
@@ -32,12 +29,17 @@ class User(Model):
 	last_name = fields.StringField(default="")
 	password = fields.StringField()
 	about = fields.StringField(default="")
-	location = fields.StringField(default='')
+	location = fields.StringField(default="")
 	website = fields.StringField(default="")
 	image_url = fields.StringField(default="")
 	gender = fields.StringField(default="unspecified")
 	birthday = fields.IntField(default=None)  # Unix timestamp in seconds of user's birthday
-	stock_list = fields.ListField(default=list)
+	body = fields.StringField(default="{}")
 
 	def __init__(self, *args, **kwargs):
 		super(User, self).__init__(*args, **kwargs)
+		self.stock_manager = base.managers.stock_manager
+
+	def check_password(self, password):
+		"""Return true if password matches, using password_utils."""
+		return password_utils.check_password(password, self.password)
