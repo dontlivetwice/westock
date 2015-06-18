@@ -1,13 +1,8 @@
-import time
-import uuid
-import urlparse
-
 from flask import flash
 from flask import redirect
 from flask import url_for
 from flask import request
 from flask import render_template
-from werkzeug.security import gen_salt
 
 from server import app
 from server import csrf
@@ -48,8 +43,7 @@ def signup():
         email = request.form.get('email').encode('utf-8')
         password = request.form.get('password').encode('utf-8')
         
-        id = uuid.uuid4().int >> 65
-        user = User(id=id, username=username, first_name=first_name, last_name=last_name, email=email, password=password)
+        user = User(username=username, first_name=first_name, last_name=last_name, email=email, password=password)
         base.managers.user_manager.add_one(user)
 
         if user:

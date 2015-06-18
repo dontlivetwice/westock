@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
 
+{% block css %}
+	<link href="/static/css/profile.css" rel="stylesheet">
+{% endblock %}
+
 {% block login %}
         {% if get_current_user() %}
-        <p class="text-right user-nav">{{ get_current_user() }} <a href="/logout/" class="btn btn-success">Logout</a></p>
+        <p class="text-right user-nav">{{ get_current_user() }} <a href="/logout/" class="btn btn-primary">Logout</a></p>
         {% endif %}
 {% endblock %}
 
@@ -40,7 +44,107 @@
 			{% endif %}
     {% endfor %}
    {% else %}
-   		<h1>You have no stocks!</h1>
+   		<div class="contentContainer">
+	   		<div class="headerContainer">
+	   			<h2 class="text-center headerTitle">Follow 5 sectors</h2>
+				<h3 class="text-center headerSubTitle">Then we'll build a custom home feed for you</h3>
+	   		</div>
+	   		<div class="container-fluid gridContainer">
+		   		<div class="rowContainer1">
+		   			<div class="row">
+					  	<div class="col-md-4 tech">
+						  	<div class="interestImage">
+						  		<img src="/static/images/rsz_tech.jpg" alt="Responsive image" class="img-rounded img-responsive center-block">
+						  	</div>
+						  	<div class="caption interestLabel">
+						  		<p class="text-center"> Technology </p>
+						  	</div>
+						  	<button type="button" class="btn btn-primary btn-block">Follow</button>
+						</div>
+						<div class="col-md-4 energy">
+						  	<div class="interestImage">
+						  		<img src="/static/images/rsz_energy.jpg" alt="Responsive image" class="img-rounded img-responsive center-block">
+						  	</div>
+						  	<div class="caption interestLabel">
+						  		<p class="text-center"> Energy </p>
+						  	</div>
+						  	<button type="button" class="btn btn-primary btn-block">Follow</button>
+						</div>
+						<div class="col-md-4 financials">
+						  	<div class="interestImage">
+						  		<img src="/static/images/rsz_financials.jpg" alt="Responsive image" class="img-rounded img-responsive center-block">
+						  	</div>
+						  	<div class="caption interestLabel">
+						  		<p class="text-center"> Financials </p>
+						  	</div>
+						  	<button type="button" class="btn btn-primary btn-block">Follow</button>
+						</div>
+					</div>
+				</div>
+		   		<div class="rowContainer2">
+		   			<div class="row">
+					  	<div class="col-md-4 health">
+						  	<div class="interestImage">
+						  		<img src="/static/images/rsz_health_care.jpg" alt="Responsive image" class="img-rounded img-responsive center-block">
+						  	</div>
+						  	<div class="caption interestLabel">
+						  		<p class="text-center"> Health </p>
+						  	</div>
+						  	<button type="button" class="btn btn-primary btn-block">Follow</button>
+						</div>
+						<div class="col-md-4 industrials">
+						  	<div class="interestImage">
+						  		<img src="/static/images/rsz_industrials.jpg" alt="Responsive image" class="img-rounded img-responsive center-block">
+						  	</div>
+						  	<div class="caption interestLabel">
+						  		<p class="text-center"> Industrials </p>
+						  	</div>
+						  	<button type="button" class="btn btn-primary btn-block">Follow</button>
+						</div>
+						<div class="col-md-4 materials">
+						  	<div class="interestImage">
+						  		<img src="/static/images/rsz_materials.jpg" alt="Responsive image" class="img-rounded img-responsive center-block">
+						  	</div>
+						  	<div class="caption interestLabel">
+						  		<p class="text-center"> Materials </p>
+						  	</div>
+						  	<button type="button" class="btn btn-primary btn-block">Follow</button>
+						</div>
+					</div>
+				</div>
+		   		<div class="rowContainer3">
+		   			<div class="row">
+					  	<div class="col-md-4 communication">
+						  	<div class="interestImage">
+						  		<img src="/static/images/rsz_telecommunication.jpg" alt="Responsive image" class="img-rounded img-responsive center-block">
+						  	</div>
+						  	<div class="caption interestLabel">
+						  		<p class="text-center"> Communications </p>
+						  	</div>
+						  	<button type="button" class="btn btn-primary btn-block">Follow</button>
+						</div>
+						<div class="col-md-4 utilities">
+						  	<div class="interestImage">
+						  		<img src="/static/images/rsz_utilities.jpg" alt="Responsive image" class="img-rounded img-responsive center-block">
+						  	</div>
+						  	<div class="caption interestLabel">
+						  		<p class="text-center"> Utilities </p>
+						  	</div>
+						  	<button type="button" class="btn btn-primary btn-block">Follow</button>
+						</div>
+						<div class="col-md-4 consumer">
+						  	<div class="interestImage">
+						  		<img src="/static/images/rsz_consumer.jpg" alt="Responsive image" class="img-rounded img-responsive center-block">
+						  	</div>
+						  	<div class="caption interestLabel">
+						  		<p class="text-center"> Consumer </p>
+						  	</div>
+						  	<button type="button" class="btn btn-primary btn-block">Follow</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
    {% endif %}
 </div>
 {% endblock %}

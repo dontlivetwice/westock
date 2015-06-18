@@ -1,81 +1,53 @@
-import json
 from utils.time import Time
-from yahoo_finance import Share
-from collections import defaultdict
-
 from core.models.stock import Stock
-from core.managers.db_manager import DBManager
+from core.managers.base_manager import Manager, ManagerException
 
 
-class StockManagerException(object):
-	pass
+class StockManagerException(ManagerException):
+    pass
 
 
-class StockManager(object):
-	def __init__(self):
-		self.db_manager = DBManager('stocks')
+class StockManager(Manager):
+    def __init__(self):
+        super(StockManager, self).__init__('stocks')
 
-	@classmethod
-	def _serialize_stock(cls, user_id, stock):
-		if stock:
-			return (user_id, stock.get('ticker'), Time.get_time(), stock.get('name'), stock.get('link'),
-			stock.get('time'), stock.get('call_link'), stock.get('body'))
+    @classmethod
+    def _serialize(cls, stock):
+        if stock:
+            return (Time.get_time(), stock.get('ticker'), stock.get('name'), stock.get('link'),
+                    stock.get('time'), stock.get('call_link'), stock.get('body'), stock.get('interest_id', 1))
 
-		return ()
+        return ()
 
-	@classmethod
-	def _deserialize_stock(cls, stock):
-		if stock:
-			args = {}
+    @classmethod
+    def _deserialize(cls, obj):
+        """ Deserializes the passed in object based on DB mapping """
+        if obj:
+            args = {}
 
-			count = 0
+            count = 0
 
-			for var in stock:
-				args.update({Stock.DB_MAPPINGS[count]: var})
-				count = count + 1
+            for var in obj:
+                args.update({Stock.DB_MAPPINGS[count]: var})
+                count += 1
 
-			return Stock(**args)
+            return Stock(**args)
 
-		return None
+        return None
 
-	def add_one(self, user_id, ticker):
-		# 1. validate stock tiker with yahoo finance API
-		share = Share(ticker.upper())
+    def add_one(self, stock):
+        query = ''' (access_time, ticker, name, link, time, call_link, body, interest_id)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)'''
 
-		name = share.data_set.get('Name')
-		symbol = share.data_set.get('Symbol')
-		currency = share.data_set.get('Currency')
+        return self.db_manager.add_one(query, StockManager._serialize(stock))
 
-		if not name and not currency:
-			StockManagerException('StockNotFoundError:')
+    def get_many(self, limit=None):
+        stocks = self.db_manager.get_many(limit)
 
-		stock = Stock(ticker=symbol, name=name)
+        deserialized_stocks = []
 
-		query = ''' (user_id, ticker, access_time, name, link, time, call_link, body) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)'''
+        if stocks:
+            for stock in stocks:
+                deserialized_stocks.append(StockManager._deserialize(stock))
 
-		return self.db_manager.add_one(query, StockManager._serialize_stock(user_id, stock))
-
-	def update_one(self, user_id, ticker):
-		share = Share(ticker.upper())
-
-		symbol = share.get_info().get('symbol')
-		name = share.get_info().get('CompanyName')
-		stock = Stock(ticker=symbol)
-
-		self.db_manager.update_one(123, stock.serialize_stock())
-
-	def get_one(self, user_id, ticker):
-		pass
-
-	def get_many(self, user_id):
-		query = "user_id = \"%s\"" % user_id
-
-		stocks = self.db_manager.get_many(query)
-
-		deserialized_stocks = []
-
-		if stocks:
-			for stock in stocks:
-				deserialized_stocks.append(StockManager._deserialize_stock(stock))
-
-		return deserialized_stocks
+        return deserialized_stocks

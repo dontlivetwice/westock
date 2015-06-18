@@ -1,15 +1,73 @@
 import types
+from core.managers.db_manager import DBManager
+
 
 class ManagerException(Exception):
-	pass
+    pass
 
 
 class Manager(object):
-    def __init__(self, **kwargs):
-        pass
+    def __init__(self, db_name):
+        self.db_manager = DBManager(db_name)
 
-	def login(self, username_or_email, password):
-		pass
+    @classmethod
+    def _serialize(cls, obj):
+        """ Serializes the passed in object """
+        raise NotImplementedError
+
+    @classmethod
+    def _deserialize(cls, obj):
+        """ Deserializes the passed in object """
+        raise NotImplementedError
+
+    def add_one(self, obj):
+        """ Adds the passed in object to the DB
+            sub classes should implement this """
+        raise NotImplementedError
+
+    def update_one(self, obj):
+        """ Updates the passed in object in the DB"""
+        if obj:
+            query = " "
+
+            serialized_user = Manager._serialize(obj)
+
+            count = 0
+
+            for value in serialized_user:
+                if obj.__class__.DB_MAPPINGS[count] not in obj.__class__.unmutable_fields():
+                    query += "%s = \"%s\", " % (obj.__class__.DB_MAPPINGS[count], value)
+
+                count += 1
+
+            query = query[:-2] + ''' WHERE id=%s''' % obj.get('id')
+
+            return self.db_manager.update_one(query)
+
+        raise ManagerException('%sIsNoneError' % obj.__class__)
+
+    def get_one(self, **kwargs):
+        """ Gets the passed in object from the DB"""
+        query = ""
+
+        for key, value in kwargs.items():
+            query += "%s = \"%s\" AND " % (key, value)
+
+        query = query[:-5]
+
+        obj = self.db_manager.get_one(query)
+
+        return self._deserialize(obj)
+
+    def delete_one(self, obj):
+        """ Deletes the passed in object from the DB"""
+        if obj:
+            query = "id = \"%s\"" % obj.get('id')
+
+            return self.db_manager.delete_one(query)
+
+        raise ManagerException('%sIsNoneError' % obj.__class__)
+
 
 class ManagerSelector(object):
     """Allows for managers to be registered with a group name and then set.
@@ -23,10 +81,12 @@ class ManagerSelector(object):
     """
 
     _manager_types = (
-    	"db_manager",
+        "db_manager",
         "stock_manager",
-        "user_manager"
-        )
+        "user_manager",
+        "interest_manager",
+        "user_stock_manager"
+    )
 
     def __init__(self, **kwargs):    	
         self.manager_groups = {}
@@ -47,11 +107,11 @@ class ManagerSelector(object):
         self.manager_groups[group] = managers
 
     def _set_manager(self, manager_group, manager_type, **kwargs):
-    	try:
-        	manager = self.manager_groups[manager_group][manager_type]
-        	self.__dict__['%s' % manager_type] = manager(**kwargs)
+        try:
+            manager = self.manager_groups[manager_group][manager_type]
+            self.__dict__['%s' % manager_type] = manager(**kwargs)
         except KeyError:
-        	pass
+            pass
 
     def set_group(self, manager_group, **kwargs):
         if self.initialized:

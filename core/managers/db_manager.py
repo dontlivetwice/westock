@@ -1,5 +1,10 @@
 import MySQLdb
 
+
+class DBManagerException():
+    pass
+
+
 class DBManager(object):
     def __init__(self, db_name):
         self.db = MySQLdb.connect(user='db_user', passwd='db_pass', db='stockinterest')
@@ -8,6 +13,7 @@ class DBManager(object):
         self.CREATE_TEMPLATE = '''INSERT INTO ''' + self.table_name
         self.UPDATE_TEMPLATE = '''UPDATE ''' + self.table_name + ''' SET '''
         self.SELECT_TEMPLATE = '''SELECT * FROM ''' + self.table_name + ''' WHERE '''
+        self.SELECT_MANY_TEMPLATE = '''SELECT * FROM ''' + self.table_name
         self.DELETE_TEMPLATE = '''DELETE FROM ''' + self.table_name + ''' WHERE '''
 
     def add_one(self, query, query_data):
@@ -28,8 +34,11 @@ class DBManager(object):
 
         return None
 
-    def get_many(self, query, limit=None):
-        ret = self.cursor.execute(self.SELECT_TEMPLATE + query)
+    def get_many(self, limit=None, query=None):
+        if query:
+            ret = self.cursor.execute(self.SELECT_TEMPLATE + query)
+        else:
+            ret = self.cursor.execute(self.SELECT_MANY_TEMPLATE)
 
         if ret:
             if limit:

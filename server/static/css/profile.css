@@ -1,0 +1,38 @@
+.tech {
+}
+
+.interestImage {
+    position: relative;
+}
+
+.interestLabel {
+    position: relative;
+}
+
+.contentContainer {
+    margin: 0 auto;
+    width: 80%;
+}
+
+.headerContainer {
+    margin: 0 auto;
+    width: 60%;
+    padding-bottom:40px;
+}
+
+.gridContainer {
+    margin: 0 auto;
+    width: 50%;
+}
+
+.rowContainer1 {
+    margin:0px; padding-bottom:40px;
+}
+
+.rowContainer2 {
+    margin:0px; padding-bottom:40px;
+}
+
+.rowContainer3 {
+    margin:0px; padding-bottom:40px;
+}
