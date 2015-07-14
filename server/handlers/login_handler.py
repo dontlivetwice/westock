@@ -16,7 +16,10 @@ def login_user(user_id, name):
 
 def user_logout():
     for key in ('user_id', 'expires', 'name'):
-        del session[key]
+        try:
+            del session[key]
+        except KeyError:
+            continue
 
 
 def require_login(f):
@@ -29,6 +32,15 @@ def require_login(f):
     return wrapped
 
 
+def get_current_user_id():
+    # TODO: Keep track of sessions
+    if 'expires' in session:
+        if session['expires'] < time.time():
+            user_logout()
+        return session.get('user_id')
+    return None
+
+
 def get_current_user():
     # TODO: Keep track of sessions
     if 'expires' in session:
@@ -36,3 +48,19 @@ def get_current_user():
             user_logout()
         return session.get('name')
     return None
+
+
+def is_interests_set():
+    # TODO: Keep track of sessions
+    if 'expires' in session:
+        if session['expires'] < time.time():
+            user_logout()
+        return session.get('interest_set')
+    return None
+
+
+def set_interests_flag(is_set):
+    if 'expires' in session:
+        if session['expires'] < time.time():
+            user_logout()
+    session['interest_set'] = is_set

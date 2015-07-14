@@ -1,3 +1,4 @@
+import MySQLdb
 import types
 from core.managers.db_manager import DBManager
 
@@ -30,13 +31,18 @@ class Manager(object):
         if obj:
             query = " "
 
-            serialized_user = Manager._serialize(obj)
+            serialized_obj = self._serialize(obj)
 
-            count = 0
+            count = 1
 
-            for value in serialized_user:
+            for value in serialized_obj:
                 if obj.__class__.DB_MAPPINGS[count] not in obj.__class__.unmutable_fields():
-                    query += "%s = \"%s\", " % (obj.__class__.DB_MAPPINGS[count], value)
+                    if value is not None:
+
+                        if isinstance(value, unicode) or isinstance(value, str):
+                            value = MySQLdb.escape_string(value)
+
+                        query += '%s = \'%s\', ' % (obj.__class__.DB_MAPPINGS[count], value)
 
                 count += 1
 
@@ -51,7 +57,10 @@ class Manager(object):
         query = ""
 
         for key, value in kwargs.items():
-            query += "%s = \"%s\" AND " % (key, value)
+            if isinstance(value, unicode) or isinstance(value, str):
+                value = MySQLdb.escape_string(value)
+
+            query += '%s = \"%s\" AND ' % (key, value)
 
         query = query[:-5]
 
@@ -62,11 +71,22 @@ class Manager(object):
     def delete_one(self, obj):
         """ Deletes the passed in object from the DB"""
         if obj:
-            query = "id = \"%s\"" % obj.get('id')
+            query = 'id = \"%s\"' % obj.get('id')
 
             return self.db_manager.delete_one(query)
 
         raise ManagerException('%sIsNoneError' % obj.__class__)
+
+    def get_many(self, limit=None):
+        objs = self.db_manager.get_many(limit)
+
+        deserialized_objs = []
+
+        if objs:
+            for obj in objs:
+                deserialized_objs.append(self._deserialize(obj))
+
+        return deserialized_objs
 
 
 class ManagerSelector(object):

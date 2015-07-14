@@ -22,7 +22,7 @@ class DBManager(object):
         return ret
 
     def update_one(self, query):
-        ret = self.cursor.execute(self.UPDATE_TEMPLATE + query)        
+        ret = self.cursor.execute(self.UPDATE_TEMPLATE + query)
         self.db.commit()
         return ret
 

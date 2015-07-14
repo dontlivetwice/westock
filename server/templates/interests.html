@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block css %}
+	<link href="/static/css/profile.css" rel="stylesheet">
+{% endblock %}
+
+{% block container %}
+{% set interests = get_interests_for_user(get_current_user_id()) %}
+<div class="interest-list">
+    {% if interests|length %}
+	    {% for interest in interests %}
+			{% if (loop.index0 % 3) == 0 %}
+			    <div class="row">
+			{% endif %}
+                    <div class="col-md-4 interest">
+                        <div class="interestImage">
+                            <img src="{{ interest.get('image_url') }}" alt="Responsive image" class="img-rounded img-responsive center-block">
+                        </div>
+                        <p class="text">{{ interest.get('name') }} </p>
+                    </div>
+			{% if (loop.index0 % 3) == 0 %}
+			    </div>
+			{% endif %}
+        {% endfor %}
+   {% else %}
+   {% endif %}
+</div>
+{% endblock %}

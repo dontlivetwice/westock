@@ -2,22 +2,11 @@
 
 
 {% block container %}
-<!DOCTYPE html>
 <html lang="en">
   <head>
     <title> WeStock home page </title>
   </head>
   <body>
-
-    {% block login %}
-        <div id="navbar" class="navbar-collapse collapse">
-          <form class="navbar-form navbar-right" role="form" method="POST" action="/">
-            <button type="submit" name="action" value="sign-up" class="btn btn-primary">Sign up</button>
-            <button type="submit" name="action" value="log-in" class="btn btn-primary">Log in</button>
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-          </form>
-        </div><!--/.navbar-collapse -->
-    {% endblock %}
 
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="westock">

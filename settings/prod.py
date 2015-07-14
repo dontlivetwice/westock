@@ -1,4 +1,4 @@
-DEBUG = False
+DEBUG = True
 
 # These add security to the application and should be sent with all requests.
 # X-Frame-Options: protects against clickjacking attacks, prevents patio from
@@ -12,7 +12,7 @@ DEBUG = False
 HEADERS = {
     'X-Frame-Options': 'DENY',
     'X-XSS-Protection': '1; mode=block',
-    'Content-Security-Policy': "default-src 'self'",
+    #'Content-Security-Policy': "default-src 'self'",
     'X-Content-Type-Options': 'nosniff'
 }
 
@@ -44,6 +44,7 @@ SSL_HEADERS = {
 }
 
 YAHOO_FINANCE_URL = 'http://biz.yahoo.com/research/earncal/'
+YAHOO_FINANCE_PROFILE_URL = 'http://finance.yahoo.com/q/pr?s=%s+Profile'
 
 SECRET_KEY = '\xda\xbetl\xa4Nr\x17\xd7\xd1E\xed"\xee\x02\r\x0e\xe8]\x9bl\xf3\r\xb9'
 

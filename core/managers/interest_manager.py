@@ -1,3 +1,4 @@
+import json
 from utils.time import Time
 from core.models.interest import Interest
 from core.managers.base_manager import Manager, ManagerException
@@ -15,13 +16,12 @@ class InterestManager(Manager):
     def _serialize(cls, interest):
         if interest:
             return (Time.get_time(), interest.get('name'), interest.get('image_url'),
-                    interest.get('body'))
+                    json.dumps(interest.get('body')), interest.get('followers'))
 
         return ()
 
     @classmethod
     def _deserialize(cls, obj):
-        """ Deserializes the passed in object based on DB mapping """
         if obj:
             args = {}
 
@@ -36,6 +36,6 @@ class InterestManager(Manager):
         return None
 
     def add_one(self, interest):
-        query = ''' (access_time, name, image_url, body) VALUES (%s, %s, %s, %s)'''
+        query = ''' (access_time, name, image_url, body, followers) VALUES (%s, %s, %s, %s, %s)'''
 
         return self.db_manager.add_one(query, InterestManager._serialize(interest))

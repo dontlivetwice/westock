@@ -1,7 +1,10 @@
+import json
 from utils.time import Time
 
 from core.models.user import User
 from core.managers.base_manager import Manager, ManagerException
+from core.managers.user_stock_manager import UserStockManager
+
 from core.utils import password_utils
 
 
@@ -12,6 +15,7 @@ class UserManagerException(ManagerException):
 class UserManager(Manager):
     def __init__(self):
         super(UserManager, self).__init__('users')
+        self.user_stock_manager = UserStockManager()
 
     @classmethod
     def _serialize(cls, user):
@@ -19,7 +23,7 @@ class UserManager(Manager):
             return (Time.get_time(), user.get('username'), user.get('first_name'),
                     user.get('last_name'), user.get('email'), password_utils.encrypt_password(user.get('password')),
                     user.get('about'), user.get('location'), user.get('website'), user.get('image_url'),
-                    user.get('gender'), user.get('birthday'), user.get('stock_list'))
+                    user.get('gender'), user.get('birthday'), json.dumps(user.get('body')))
 
         return ()
 
@@ -43,7 +47,12 @@ class UserManager(Manager):
         query = ''' (access_time, username, first_name, last_name, email, password, about, location, website,
         image_url, gender, birthday, body) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
 
-        return self.db_manager.add_one(query, UserManager._serialize(user))
+        ret = self.db_manager.add_one(query, UserManager._serialize(user))
+
+        if ret:
+            return self.get_one(username=user.get('username'))
+
+        return None
 
     def login(self, username_or_email, password):
         if "@" in username_or_email:

@@ -2,15 +2,14 @@ import logging
 
 from flask import Flask
 from flask_wtf.csrf import CsrfProtect
-from raven.contrib.flask import Sentry
 
 from settings import prod
 
 log = logging.getLogger(__name__)
 
 app = Flask(__name__)
-
-app.debug = prod.DEBUG
+app.config['DEBUG'] = True
+app.debug = True
 
 app.secret_key = prod.SECRET_KEY
 

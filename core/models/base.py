@@ -1,3 +1,4 @@
+import json
 import core.managers.base_manager as base_manager
 
 managers = base_manager.ManagerSelector()
@@ -11,6 +12,7 @@ class ModelValidationError(Exception):
 class RequiredFieldError(ModelValidationError):
     """Thrown when a model is missing a required field."""
     pass
+
 
 class ModelBaseType(type):
     """Meta-class for Model."""
@@ -36,10 +38,10 @@ class ModelBaseType(type):
         else:
             setattr(cls, obj_name, obj)
 
+
 class Model(object):
     __metaclass__ = ModelBaseType
 
-    
     def _set_attributes(self, *args, **kwargs):
         if args:
             if len(args) > 1:
@@ -54,12 +56,16 @@ class Model(object):
                 pass
             
             try:
+                if key == 'body':
+                    if val is not None:
+                        val = json.loads(val)
                 setattr(self, key, val)
-            except AttributeError:
+            except:
                 continue
 
     def __init__(self, *args, **kwargs):
         self._data = self._get_data()
+        self._dirty_fields = set()
         self._set_attributes(*args, **kwargs)
 
     def __contains__(self, key):

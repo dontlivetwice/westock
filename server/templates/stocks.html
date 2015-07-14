@@ -1,38 +1,11 @@
 {% extends 'base.html' %}
 
 {% block css %}
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/static/css/bootstrap-responsive.min.css" rel="stylesheet">
 	<link href="/static/css/profile.css" rel="stylesheet">
-    <style type="text/css">
-        @media screen and min-width 1px and max-width 767px {
-            #columns[data-columns]::before {
-                content: '2 .col-xs-6';
-            }
-
-        }
-
-        @media screen and min-width768px and max-width 991px {
-            #columns[data-columns]::before {
-                content: '3 .col-sm-4';
-            }
-
-        }
-
-        @media screen and min-width992px and max-width 9999px {
-            #columns[data-columns]::before {
-                content: '4 .col-md-3';
-            }
-
-        }
-    </style>
 {% endblock %}
 
 {% block container %}
-{% set user_id = get_current_user_id() %}
-{% set interests_set = get_interest_flow_state(user_id) %}
-{% set stocks = get_stocks_for_user(user_id) %}
-
+{% set stocks = get_stocks_for_user(get_current_user_id(), False) %}
 <div class="stock-list">
     {% if stocks|length %}
         <div class="container">
@@ -44,7 +17,7 @@
             var grid = document.querySelector('#columns');
 
             function addStockNode(ticker, name, time, about, is_owned, open, days_high, days_low, year_high, year_low,
-                volume, market_cap, pe_ratio, div_yield, change, change_percent, followers) {
+                volume, market_cap, pe_ratio, div_yield, change, change_percent) {
 
                 var stockInfo = [open, volume, days_high, change_percent, days_low, market_cap, year_high, pe_ratio,
                     year_low, div_yield];
@@ -53,15 +26,17 @@
                     "52 WK LOW", "DIV/YIELD"];
 
                 var stock = document.createElement("div");
-                stock.className = "col-md-4";
+                stock.className = "col-md-3";
 
                 var thumbnail = document.createElement("div");
                 thumbnail.className = "thumbnail"
                 stock.appendChild(thumbnail);
 
                 var chartDiv = document.createElement("div");
-                var chart = document.createElement('div');
+
+                var chart = document.createElement('canvas');
                 chart.id = ticker+'Chart';
+                chart.className = 'canvas'
                 chartDiv.appendChild(chart);
                 thumbnail.appendChild(chartDiv);
 
@@ -132,10 +107,7 @@
                 aboutDiv.appendChild(text);
                 caption.appendChild(aboutDiv);
 
-                var ul = document.createElement("ul");
-                ul.className = 'list-inline'
-
-                var link = document.createElement("li");
+                var link = document.createElement("P");
 
                 var follow = document.createElement("A");
                 follow.className = 'btn btn-primary';
@@ -151,20 +123,8 @@
 
                 textDiv = document.createTextNode(text);
                 follow.appendChild(textDiv);
-                link.appendChild(follow);
-                ul.appendChild(link);
-
-                var followerDiv = document.createElement("li");
-                var valueDiv = document.createElement("P");
-                valueDiv.className = 'text-right strong alignRight small';
-                var text = document.createTextNode(followers + " followers");
-                valueDiv.id = ticker + "Followers";
-                valueDiv.appendChild(text);
-                followerDiv.appendChild(valueDiv)
-
-                ul.appendChild(followerDiv);
-
-                caption.appendChild(ul);
+                link.appendChild(follow)
+                caption.appendChild(link);
 
                 var item = document.createElement('stock');
                 salvattore.appendElements(grid, [item]);
@@ -186,10 +146,6 @@
                         else {
                             stock.text = "Follow";
                         }
-
-                        var followers = document.getElementById(arrayResp.ticker+"Followers");
-                        followers.text
-                        followers.innerHTML = parseInt(followers.text) + 1;
                     }
                     else if (req.readyState==4 && req.status!=200) {
                         $('#errorModal').modal();
@@ -215,9 +171,9 @@
         </script>
 
         <script src="/static/js/salvattore.min.js"></script>
-        <script>google.load('visualization', '1.1', {packages: ['line']});</script>
+
 	    {% for stock in stocks %}
-        <script type="text/javascript">
+        <script>
             ticker = "{{ stock.get('ticker') }}";
             name = "{{ stock.get('name') }}";
             time = "{{ stock.get('time') }}";
@@ -235,90 +191,96 @@
             change = "{{ stock.get_change() }}";
             change_percent = "{{ stock.get_change_percent() }}";
             is_owned = "{{ stock.is_owned }}";
-            price = {{ stock.get_price() }};
-            followers = {{ stock.get_followers() }}
 
             addStockNode(ticker, name, time, about, is_owned, open, days_high, days_low, year_high, year_low, volume,
-            market_cap, pe_ratio, div_yield, change, change_percent, followers);
+            market_cap, pe_ratio, div_yield, change, change_percent);
 
-            google.setOnLoadCallback(drawChart());
-
-            function drawChart() {
-
-              var data = new google.visualization.DataTable();
-              data.addColumn('number', '');
-              data.addColumn('number', ticker);
-
-              data.addRows(price);
-
-              var options = {
-                legend: {position: 'none'},
-                curveType: 'function',
-                vAxis: { gridlines: { count: 2 } },
-                hAxis: {'baseline': 0, 'gridlines': {color: '#333', count: 0}},
-              };
-
-              var chart = new google.charts.Line(document.getElementById(ticker+"Chart"));
-
-              chart.draw(data, options);
+            if (change <= 0) {
+                var data = {
+                    labels: {{ stock.get_price_labels() }},
+                    datasets: [
+                        {
+                            label: ticker,
+                            fillColor: "rgba(151,187,205,0.2)",
+                            strokeColor: "#d10808",
+                            pointColor: "#d10808",
+                            pointStrokeColor: "#fff",
+                            pointHighlightFill: "#fff",
+                            pointHighlightStroke: "rgba(151,187,205,1)",
+                            data: {{ stock.get_price_values() }}
+                        }
+                    ]
+                };
+            } else {
+                 var data = {
+                    labels: {{ stock.get_price_labels() }},
+                    datasets: [
+                        {
+                            label: ticker,
+                            fillColor: "rgba(151,187,205,0.2)",
+                            strokeColor: "#099422",
+                            pointColor: "#099422",
+                            pointStrokeColor: "#fff",
+                            pointHighlightFill: "#fff",
+                            pointHighlightStroke: "rgba(151,187,205,1)",
+                            data: {{ stock.get_price_values() }}
+                        }
+                    ]
+                };
             }
+
+            // Get the context of the canvas element we want to select
+            var ctx = document.getElementById(ticker+'Chart').getContext("2d");
+
+            var options = {
+                ///Boolean - Whether grid lines are shown across the chart
+                scaleShowGridLines : true,
+
+                //String - Colour of the grid lines
+                scaleGridLineColor : "rgba(0,0,0,.05)",
+
+                //Number - Width of the grid lines
+                scaleGridLineWidth : 1,
+
+                //Boolean - Whether to show horizontal lines (except X axis)
+                scaleShowHorizontalLines: true,
+
+                //Boolean - Whether to show vertical lines (except Y axis)
+                scaleShowVerticalLines: true,
+
+                //Boolean - Whether the line is curved between points
+                bezierCurve : true,
+
+                //Number - Tension of the bezier curve between points
+                bezierCurveTension : 0.4,
+
+                //Boolean - Whether to show a dot for each point
+                pointDot : false,
+
+                //Number - Radius of each point dot in pixels
+                pointDotRadius : 4,
+
+                //Number - Pixel width of point dot stroke
+                pointDotStrokeWidth : 1,
+
+                //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+                pointHitDetectionRadius : 20,
+
+                //Boolean - Whether to show a stroke for datasets
+                datasetStroke : false,
+
+                //Number - Pixel width of dataset stroke
+                datasetStrokeWidth : 2,
+
+                //Boolean - Whether to fill the dataset with a colour
+                datasetFill : false,
+            };
+            var chart = new Chart(ctx).Line(data, options);
 
             var follow = document.getElementById(ticker);
             follow.addEventListener("click", followUnfollowStock, true);
         </script>
         {% endfor %}
-   {% else %}
-    {% if not interests_set %}
-        {% set interests = get_interest_list() %}
-
-        <div class="modal fade" id="interestModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="interestModalLabel">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <div class="headerContainer">
-                    <h2 class="text-center headerTitle">Follow 5 sectors</h2>
-                    <h3 class="text-center headerSubTitle">Then we'll build a custom home feed for you</h3>
-                </div>
-              </div>
-              <form id="interest-form" action="/interests/" method="post" name ="interest-form">
-                  <div class="modal-body">
-                    {% if interests|length %}
-                      {% for interest in interests %}
-                        {% if (loop.index0 % 3) == 0 %}
-                            <div class="rowContainer">
-                                <div class="row">
-                        {% endif %}
-                                    <div class="col-md-4 interest">
-                                        <div class="interestImage">
-                                            <img src="{{ interest.get('image_url') }}" alt="Responsive image" class="img-rounded img-responsive center-block">
-                                        </div>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" name="{{ interest.get('name') }}" id="{{ interest.get('name') }}" value="true"> {{ interest.get('name') }}
-                                        </label>
-                                    </div>
-                        {% if (loop.index % 3) == 0 %}
-                                </div>
-                            </div>
-                        {% endif %}
-                      {% endfor %}
-
-                      {% if (loop.index % 3) != 0 %}
-                            </div>
-                        </div>
-                      {% endif %}
-                    {% endif %}
-                  </div>
-                  <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary medium-btn" id="done">Done</button>
-                  </div>
-                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            </form>
-            </div>
-          </div>
-        </div>
-
-        <script src="/static/js/profile.js"></script>
     {% endif %}
-   {% endif %}
 </div>
 {% endblock %}

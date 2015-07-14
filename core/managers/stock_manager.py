@@ -1,3 +1,4 @@
+import json
 from utils.time import Time
 from core.models.stock import Stock
 from core.managers.base_manager import Manager, ManagerException
@@ -14,8 +15,12 @@ class StockManager(Manager):
     @classmethod
     def _serialize(cls, stock):
         if stock:
-            return (Time.get_time(), stock.get('ticker'), stock.get('name'), stock.get('link'),
-                    stock.get('time'), stock.get('call_link'), stock.get('body'), stock.get('interest_id', 1))
+            about = stock.get('about')
+            if about:
+                about = about.decode('ascii', errors='ignore')
+
+            return (Time.get_time(), stock.get('ticker'), stock.get('name'), about, stock.get('time'),
+                    stock.get('followers'), json.dumps(stock.get('body')), stock.get('interest_id', 1))
 
         return ()
 
@@ -28,6 +33,12 @@ class StockManager(Manager):
             count = 0
 
             for var in obj:
+                if Stock.DB_MAPPINGS[count] == 'about' and var is not None:
+                    try:
+                        var = var.encode('ascii', errors='ignore')
+                    except:
+                        pass
+
                 args.update({Stock.DB_MAPPINGS[count]: var})
                 count += 1
 
@@ -36,18 +47,20 @@ class StockManager(Manager):
         return None
 
     def add_one(self, stock):
-        query = ''' (access_time, ticker, name, link, time, call_link, body, interest_id)
+        query = ''' (access_time, ticker, name, about, time, followers, body, interest_id)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)'''
 
         return self.db_manager.add_one(query, StockManager._serialize(stock))
 
-    def get_many(self, limit=None):
-        stocks = self.db_manager.get_many(limit)
+    def get_stocks_for_interest(self, interest_id, limit=None):
+        query = "interest_id = \"%s\"" % interest_id
 
-        deserialized_stocks = []
+        stocks = self.db_manager.get_many(limit, query)
+
+        result_list = []
 
         if stocks:
             for stock in stocks:
-                deserialized_stocks.append(StockManager._deserialize(stock))
+                result_list.append(StockManager._deserialize(stock))
 
-        return deserialized_stocks
+        return result_list
