@@ -157,11 +157,18 @@
                 var followerDiv = document.createElement("li");
                 var valueDiv = document.createElement("P");
                 valueDiv.className = 'text-right strong alignRight small';
-                var text = document.createTextNode(followers + " followers");
+                var text = document.createTextNode(followers);
                 valueDiv.id = ticker + "Followers";
                 valueDiv.appendChild(text);
                 followerDiv.appendChild(valueDiv)
+                ul.appendChild(followerDiv);
 
+                var followerDiv = document.createElement("li");
+                var valueDiv = document.createElement("P");
+                valueDiv.className = 'text-right strong alignRight small';
+                var text = document.createTextNode(" Followers");
+                valueDiv.appendChild(text);
+                followerDiv.appendChild(valueDiv)
                 ul.appendChild(followerDiv);
 
                 caption.appendChild(ul);
@@ -180,16 +187,19 @@
 
                         var stock = document.getElementById(arrayResp.ticker);
 
+                        var count = 0;
+
                         if (stock.text == "Follow") {
                             stock.text = "UnFollow";
+                            count = 1;
                         }
                         else {
                             stock.text = "Follow";
+                            count = -1;
                         }
 
                         var followers = document.getElementById(arrayResp.ticker+"Followers");
-                        followers.text
-                        followers.innerHTML = parseInt(followers.text) + 1;
+                        followers.innerHTML = parseInt(followers.textContent) + count;
                     }
                     else if (req.readyState==4 && req.status!=200) {
                         $('#errorModal').modal();

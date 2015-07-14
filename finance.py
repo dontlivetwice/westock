@@ -110,7 +110,6 @@ def main():
 
                         if not interest:
                             print "-->Could not find sector: %s for stock: %s"%(sector, ticker)
-                            print "-->adding stock to others"
                             interest = base.managers.interest_manager.get_one(name='Other')
 
                         # 4.2 Get the description

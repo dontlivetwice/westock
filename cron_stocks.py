@@ -5,8 +5,8 @@ from yahoo_finance import Share
 
 def main():
     # 1. get the time
-    day = Time.get_time_for_yahoo()
-    hours_mins = Time.get_hours_minutes()
+    day = Time.get_utc_day()
+    hours_mins = Time.get_utc_hours_minutes()
 
     # 1. Get all the list of stocks
     stocks = base.managers.stock_manager.get_many()

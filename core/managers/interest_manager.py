@@ -15,7 +15,7 @@ class InterestManager(Manager):
     @classmethod
     def _serialize(cls, interest):
         if interest:
-            return (Time.get_time(), interest.get('name'), interest.get('image_url'),
+            return (Time.get_utc_time(), interest.get('name'), interest.get('image_url'),
                     json.dumps(interest.get('body')), interest.get('followers'))
 
         return ()

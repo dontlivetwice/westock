@@ -20,7 +20,7 @@ class UserManager(Manager):
     @classmethod
     def _serialize(cls, user):
         if user:
-            return (Time.get_time(), user.get('username'), user.get('first_name'),
+            return (Time.get_utc_time(), user.get('username'), user.get('first_name'),
                     user.get('last_name'), user.get('email'), password_utils.encrypt_password(user.get('password')),
                     user.get('about'), user.get('location'), user.get('website'), user.get('image_url'),
                     user.get('gender'), user.get('birthday'), json.dumps(user.get('body')))

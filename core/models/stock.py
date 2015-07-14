@@ -28,6 +28,10 @@ class Stock(Model):
 
     def __init__(self, *args, **kwargs):
         super(Stock, self).__init__(*args, **kwargs)
+        if Time.is_market_open():
+            self.day = Time.get_utc_day()
+        else:
+            self.day = Time.get_business_day()
 
     def get_followers(self):
         return self.followers
@@ -46,8 +50,8 @@ class Stock(Model):
         if date:
             return self.body.get(date).get('open')
 
-        if self.body.get(Time.get_time_for_yahoo()):
-            return self.body.get(Time.get_time_for_yahoo()).get('open')
+        if self.body.get(self.day):
+            return self.body.get(self.day).get('open')
         return None
 
     def get_days_high(self, date=None):
@@ -56,8 +60,8 @@ class Stock(Model):
 
         if date:
             return self.body.get(date).get('days_high')
-        if self.body.get(Time.get_time_for_yahoo()):
-            return self.body.get(Time.get_time_for_yahoo()).get('days_high')
+        if self.body.get(self.day):
+            return self.body.get(self.day).get('days_high')
         return None
 
     def get_days_low(self, date=None):
@@ -67,8 +71,8 @@ class Stock(Model):
         if date:
             return self.body.get(date).get('days_low')
 
-        if self.body.get(Time.get_time_for_yahoo()):
-            return self.body.get(Time.get_time_for_yahoo()).get('days_low')
+        if self.body.get(self.day):
+            return self.body.get(self.day).get('days_low')
         return None
 
     def get_year_high(self, date=None):
@@ -78,8 +82,8 @@ class Stock(Model):
         if date:
             return self.body.get(date).get('year_high')
 
-        if self.body.get(Time.get_time_for_yahoo()):
-            return self.body.get(Time.get_time_for_yahoo()).get('year_high')
+        if self.body.get(self.day):
+            return self.body.get(self.day).get('year_high')
         return None
 
     def get_year_low(self, date=None):
@@ -89,8 +93,8 @@ class Stock(Model):
         if date:
             return self.body.get(date).get('year_low')
 
-        if self.body.get(Time.get_time_for_yahoo()):
-            return self.body.get(Time.get_time_for_yahoo()).get('year_low')
+        if self.body.get(self.day):
+            return self.body.get(self.day).get('year_low')
         return None
 
     def get_volume(self, date=None):
@@ -100,8 +104,8 @@ class Stock(Model):
         if date:
             return self.body.get(date).get('volume')
 
-        if self.body.get(Time.get_time_for_yahoo()):
-            return self.body.get(Time.get_time_for_yahoo()).get('volume')
+        if self.body.get(self.day):
+            return self.body.get(self.day).get('volume')
         return None
 
     def get_market_cap(self, date=None):
@@ -111,8 +115,8 @@ class Stock(Model):
         if date:
             return self.body.get(date).get('market_cap')
 
-        if self.body.get(Time.get_time_for_yahoo()):
-            return self.body.get(Time.get_time_for_yahoo()).get('market_cap')
+        if self.body.get(self.day):
+            return self.body.get(self.day).get('market_cap')
         return None
 
     def get_pe_ratio(self, date=None):
@@ -122,8 +126,8 @@ class Stock(Model):
         if date:
             return self.body.get(date).get('pe_ratio')
 
-        if self.body.get(Time.get_time_for_yahoo()):
-            return self.body.get(Time.get_time_for_yahoo()).get('pe_ratio')
+        if self.body.get(self.day):
+            return self.body.get(self.day).get('pe_ratio')
         return None
 
     def get_div_yield(self, date=None):
@@ -133,8 +137,8 @@ class Stock(Model):
         if date:
             return self.body.get(date).get('div_yield')
 
-        if self.body.get(Time.get_time_for_yahoo()):
-            return self.body.get(Time.get_time_for_yahoo()).get('div_yield')
+        if self.body.get(self.day):
+            return self.body.get(self.day).get('div_yield')
         return None
 
     def get_change(self, date=None):
@@ -144,8 +148,8 @@ class Stock(Model):
         if date:
             return self.body.get(date).get('change')
 
-        if self.body.get(Time.get_time_for_yahoo()):
-            return self.body.get(Time.get_time_for_yahoo()).get('change')
+        if self.body.get(self.day):
+            return self.body.get(self.day).get('change')
         return None
 
     def get_change_percent(self, date=None):
@@ -155,8 +159,8 @@ class Stock(Model):
         if date:
             return self.body.get(date).get('change_percent')
 
-        if self.body.get(Time.get_time_for_yahoo()):
-            return self.body.get(Time.get_time_for_yahoo()).get('change_percent')
+        if self.body.get(self.day):
+            return self.body.get(self.day).get('change_percent')
         return None
 
     def get_price(self, date=None):
@@ -166,8 +170,8 @@ class Stock(Model):
         if date:
             price_dict = self.body.get(date).get('price')
         else:
-            if self.body.get(Time.get_time_for_yahoo()):
-                price_dict = self.body.get(Time.get_time_for_yahoo()).get('price')
+            if self.body.get(self.day):
+                price_dict = self.body.get(self.day).get('price')
             else:
                 price_dict = None
 

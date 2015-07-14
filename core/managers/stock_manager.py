@@ -19,7 +19,7 @@ class StockManager(Manager):
             if about:
                 about = about.decode('ascii', errors='ignore')
 
-            return (Time.get_time(), stock.get('ticker'), stock.get('name'), about, stock.get('time'),
+            return (Time.get_utc_time(), stock.get('ticker'), stock.get('name'), about, stock.get('time'),
                     stock.get('followers'), json.dumps(stock.get('body')), stock.get('interest_id', 1))
 
         return ()
