@@ -69,6 +69,16 @@ class Time(object):
         return False
 
     @classmethod
+    def get_utc_offset(cls):
+        l = Time.get_local_hours_minutes()
+        u = Time.get_utc_hours_minutes()
+        offset = float(l.replace(':', '.')) - float(u.replace(':', '.'))
+
+        if offset >= 12:
+            return offset - 24
+        return offset
+
+    @classmethod
     def get_time_for_delta(cls, unit, time_delta, start_date=None):
         import datetime
         # 1. Get the time_delta as a
@@ -80,7 +90,7 @@ class Time(object):
 
         # 2. get the current time
         if not start_date:
-            now = datetime.datetime.now()
+            now = datetime.datetime.utcnow()
         else:
             now = datetime.datetime.strptime(str(start_date), '%Y%m%d')
 

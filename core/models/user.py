@@ -54,6 +54,7 @@ class User(core.models.base.Model):
         return password_utils.check_password(password, self.get('password'))
 
     def get_stocks_for_user(self):
+        """Return the list of stocks the user is following"""
         user_id = self.get('id')
 
         users_stocks = self.user_stock_manager.get_stocks_for_user(user_id)
@@ -72,13 +73,20 @@ class User(core.models.base.Model):
 
         return stocks
 
+    def is_following_stock(self, stock_id):
+        """Return the stock if the user is following"""
+        user_id = self.get('id')
+
+        user_stock = self.user_stock_manager.get_stock_for_user(user_id, stock_id)
+
+        return True if user_stock else None
+
     def get_recommended_stocks_for_user(self, limit=None):
         # 1. get user's interest list
         interests = self.get_interests_for_user()
 
         # 2. for each interest, get the list of stocks (limit 20 for now)
         stocks = []
-
         for interest in interests:
             stocks += self.stock_manager.get_stocks_for_interest(interest.get('id'), limit)
 

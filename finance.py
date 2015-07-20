@@ -1,6 +1,7 @@
 import re
 import urllib2
 from BeautifulSoup import BeautifulSoup
+import HTMLParser
 
 from settings import prod
 from utils.time import Time
@@ -51,6 +52,7 @@ def main():
                 name = stock_info[0].string
 
                 if name:
+                    name = HTMLParser.HTMLParser().unescape(name)
                     # 2.1 get the link to the stock page:
                     try:
                         link = stock_info[1].a['href']
@@ -64,6 +66,7 @@ def main():
                         ticker = None
 
                     if ticker:
+                        ticker = HTMLParser.HTMLParser().unescape(ticker)
                         # 3. get the time
                         '''
                         try:
@@ -89,6 +92,7 @@ def main():
                         for link in link_list:
                             if p.match(link.get('href')):
                                 sector = link.text
+                                sector = HTMLParser.HTMLParser().unescape(sector)
 
                         # very bad but whatever
                         if sector == 'Financial':
@@ -120,6 +124,7 @@ def main():
                         for link in link_list:
                             if len(link.text) >= 500:
                                 description = link.text
+                                description = HTMLParser.HTMLParser().unescape(description)
 
                         stock = Stock(ticker=ticker, name=name, about=description,
                                       time=Time.time_to_str_time_with_dash(current_day), interest_id=interest.get('id'))

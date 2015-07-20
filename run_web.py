@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 import ssl
 import sys
-import tornado
-from tornado import autoreload
+#import tornado
+#from tornado import autoreload
 
-from tornado.httpserver import HTTPServer
-from tornado.ioloop import IOLoop
-from tornado.wsgi import WSGIContainer
+#from tornado.httpserver import HTTPServer
+#from tornado.ioloop import IOLoop
+#from tornado.wsgi import WSGIContainer
 
 from server import app
 
@@ -26,4 +26,4 @@ if __name__ == '__main__':
     autoreload.start(ioloop)
     ioloop.start()
     '''
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8080, debug=True)

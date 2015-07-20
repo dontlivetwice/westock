@@ -7,4 +7,6 @@ raven==4.2.3
 blinker==1.2
 tornado==4.0.2
 bcrypt==1.0.1
+html==1.16
+sendgrid==1.4.0
 WTForms

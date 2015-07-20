@@ -55,3 +55,13 @@ class UserStockManager(Manager):
                 result_list.append(UserStockManager._deserialize(stock))
 
         return result_list
+
+    def get_stock_for_user(self, user_id, stock_id):
+        query = "user_id = \"%s\" and stock_id = \"%s\"" % (user_id, stock_id)
+
+        user_stock = self.db_manager.get_one(query)
+
+        if user_stock:
+                return UserStockManager._deserialize(user_stock)
+
+        return None

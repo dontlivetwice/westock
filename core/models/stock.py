@@ -1,3 +1,4 @@
+import collections
 from utils.time import Time
 from core.models.base import Model
 from core.models import fields
@@ -191,8 +192,38 @@ class Stock(Model):
 
         for key in keys:
             current_column = []
-            current_column.append(float(key.replace(':', '.')))
-            current_column.append(float(price_dict.get(key)))
+            # convert times to local time
+            offset = Time.get_utc_offset()
+            local_time = float(key.replace(':', '.')) + offset
+
+            current_column.append(str(local_time))
+            if not price_dict.get(key):
+                current_column.append(0)
+            else:
+                current_column.append(float(price_dict.get(key)))
             prices.append(current_column)
 
         return prices
+
+    def to_json_dict(self):
+        model_dict = collections.OrderedDict()
+
+        model_dict.update({'ticker': self.get('ticker')})
+        model_dict.update({'name': self.get('name')})
+        model_dict.update({'time': self.get('time')})
+        model_dict.update({'about': self.get('about')})
+        model_dict.update({'open': self.get_open()})
+        model_dict.update({'days_high': self.get_days_high()})
+        model_dict.update({'days_low': self.get_days_low()})
+        model_dict.update({'year_high': self.get_year_high()})
+        model_dict.update({'year_low': self.get_year_low()})
+        model_dict.update({'volume': self.get_volume()})
+        model_dict.update({'market_cap': self.get_market_cap()})
+        model_dict.update({'pe_ratio': self.get_pe_ratio()})
+        model_dict.update({'div_yield': self.get_div_yield()})
+        model_dict.update({'change': self.get_change()})
+        model_dict.update({'change_percent': self.get_change_percent()})
+        model_dict.update({'followers': self.get_followers()})
+        model_dict.update({'prices': self.get_price()})
+
+        return model_dict

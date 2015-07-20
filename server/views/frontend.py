@@ -1,3 +1,6 @@
+import collections
+import socket
+from utils.time import Time
 from flask import flash
 from flask import redirect
 from flask import url_for
@@ -28,6 +31,7 @@ def add_jinja_utils():
     return dict(get_current_user=login_handler.get_current_user,
                 get_current_user_id=login_handler.get_current_user_id,
                 get_stocks_for_user=stock_handler.get_stocks_for_user,
+                get_recommended_stocks_for_user=stock_handler.get_recommended_stocks_for_user,
                 get_interest_list=interest_handler.get_interest_list,
                 get_interest_flow_state=interest_handler.get_interest_flow_state,
                 get_interests_for_user=interest_handler.get_interests_for_user)
@@ -39,23 +43,23 @@ def csrf_error(reason):
     return redirect('/')
 
 
-def construct_response(result, **kwargs):
-    response_dict = {}
-
-    for key, value in kwargs.items():
-        response_dict.update({key: value})
+def construct_response(result, response_data=None):
+    response_dict = collections.OrderedDict()
 
     if isinstance(result, exceptions.ApiError):
         status = result.error_code.http_status
         message = result.error_code.message
     else:
-        message = "OK"
+        message = "ok"
         status = result
 
+    response_dict.update({"status": status})
+    response_dict.update({"host": socket.gethostname()})
+    response_dict.update({"generated_at": Time.get_utc_time()})
     response_dict.update({"message": message})
+    response_dict.update({"data": response_data})
 
     return jsonify(response_dict), status
-
 
 @app.route('/v/', methods=['GET'])
 def version():
@@ -126,36 +130,6 @@ def interests():
     return render_template('interests.html', redirect_uri=redirect_uri)
 
 
-@app.route('/stocks/', methods=['GET', 'POST', 'DELETE'])
-def stocks():
-    redirect_uri = '/'
-
-    if request.method in ['POST', 'DELETE']:
-        # if there is a logged in user, and user did not go through the interest flow, add interests to user
-        user_id = login_handler.get_current_user_id()
-
-        if not user_id:
-            raise exceptions.AuthenticationFailed()
-
-        ticker = request.form.get('ticker').encode('utf-8')
-
-        if request.method == 'POST':
-            try:
-                stock_handler.add_stock_for_user(user_id, ticker)
-                return construct_response(200, ticker=ticker)
-            except exceptions.FollowStockFailed as e:
-                return construct_response(e, ticker=ticker)
-
-        elif request.method == 'DELETE':
-            try:
-                stock_handler.delete_stock_for_user(user_id, ticker)
-                return construct_response(200, ticker=ticker)
-            except exceptions.UnFollowStockFailed as e:
-                return construct_response(e, ticker=ticker)
-
-    return render_template('stocks.html', redirect_uri=redirect_uri)
-
-
 @app.route('/', methods=['GET', 'POST'])
 def home():
     user = login_handler.get_current_user()
@@ -178,3 +152,84 @@ def home():
 def logout():
     login_handler.user_logout()
     return render_template('home.html'), 200
+
+
+'''
+    stock views
+'''
+@app.route('/stocks/', methods=['GET', 'POST', 'DELETE'])
+def stocks():
+    return render_template('stocks.html')
+
+
+@app.route('/stocks/<stock_id>/', methods=['GET'])
+def get_stock(stock_id):
+    """Get the stock for the passed in Id
+    """
+    pass
+
+
+@app.route('/me/stocks/', methods=['GET'])
+def get_stocks():
+    """Get user's stocks
+    """
+    user_id = login_handler.get_current_user_id()
+
+    if not user_id:
+        raise exceptions.AuthenticationFailed()
+
+    try:
+        response_data = stock_handler.get_stocks_for_user(user_id)
+        return construct_response(200, response_data)
+    except exceptions.FollowStockFailed as e:
+        return construct_response(e)
+
+
+@app.route('/me/following/stocks/', methods=['POST'])
+def follow_stock():
+    """Follow stock
+    """
+    user_id = login_handler.get_current_user_id()
+
+    if not user_id:
+        raise exceptions.AuthenticationFailed()
+
+    ticker = request.form.get('ticker').encode('utf-8')
+
+    try:
+        stock_handler.add_stock_for_user(user_id, ticker)
+        return construct_response(200, ticker)
+    except exceptions.FollowStockFailed as e:
+        return construct_response(e, None)
+
+
+@app.route('/me/following/stocks/<stock_id>', methods=['DELETE'])
+def unfollow_stock(stock_id):
+    """Unfollow stock
+    """
+    user_id = login_handler.get_current_user_id()
+
+    if not user_id:
+        raise exceptions.AuthenticationFailed()
+
+    try:
+        stock_handler.delete_stock_for_user(user_id, stock_id)
+        return construct_response(200, stock_id)
+    except exceptions.UnFollowStockFailed as e:
+        return construct_response(e, None)
+
+
+@app.route('/me/recommended/stocks/', methods=['GET'])
+def get_recommended_stocks():
+    """Get recommended stocks
+    """
+    user_id = login_handler.get_current_user_id()
+
+    if not user_id:
+        raise exceptions.AuthenticationFailed()
+
+    try:
+        response_data = stock_handler.get_recommended_stocks_for_user(user_id)
+        return construct_response(200, response_data)
+    except exceptions.FollowStockFailed as e:
+        return construct_response(e)

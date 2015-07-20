@@ -27,7 +27,7 @@ def main():
         days_high = updated_stock.get_days_high()
         days_low = updated_stock.get_days_low()
         year_high = updated_stock.get_year_high()
-        year_low = updated_stock.get_days_low()
+        year_low = updated_stock.get_year_low()
         volume = updated_stock.get_volume()
         market_cap = updated_stock.get_market_cap()
         pe_ratio = updated_stock.get_price_earnings_ratio()

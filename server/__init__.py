@@ -22,6 +22,7 @@ csrf = CsrfProtect(app)
 def add_headers(response):
     for header, value in prod.HEADERS.iteritems():
         response.headers.setdefault(header, value)
+        print "header, value: %s:%s" % (header, value)
     if response.mimetype not in ('text/css', 'application/javascript', 'image/png', 'image/jpg'):
         for header, value in prod.CACHE_HEADERS.iteritems():
             response.headers.setdefault(header, value)

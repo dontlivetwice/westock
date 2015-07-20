@@ -3,40 +3,43 @@ import core.models.base as base
 from server.views import exceptions
 
 
-def get_stocks_for_user(user_id, recommended=True):
+def get_stocks_for_user(user_id):
     # TODO (amine) change user_id to context and then get user id from context
     if not user_id:
         raise exceptions.AuthenticationFailed()
 
     user = base.managers.user_manager.get_one(id=user_id)
 
+    if not user:
+        raise exceptions.AuthenticationFailed()
+
+    stocks = user.get_stocks_for_user()
+
     result_stocks = []
 
-    if user:
-        # 1. get the list of stocks the user owns
-        own_stocks = user.get_stocks_for_user()
+    for stock in stocks:
+        result_stocks.append(stock.to_json_dict())
 
-        if not recommended:
-            return own_stocks
+    return result_stocks
 
-        # 2. get a recommended list of stocks based on interest (just concatenate for now)
-        random_stocks = user.get_recommended_stocks_for_user(limit=25)
 
-        # 3. construct a list of stocks
-        result_stocks_dict = {}
+def get_recommended_stocks_for_user(user_id):
+    if not user_id:
+        raise exceptions.AuthenticationFailed()
 
-        for own_stock in own_stocks:
-            result_stocks_dict.update({own_stock.get('ticker'): own_stock})
+    user = base.managers.user_manager.get_one(id=user_id)
 
-        for random_stock in random_stocks:
-            ticker = random_stock.get('ticker')
+    random_stocks = user.get_recommended_stocks_for_user(limit=20)
 
-            if not result_stocks_dict.get(ticker):
-                result_stocks_dict.update({random_stock.get('ticker'): random_stock})
+    result_stocks = []
 
-        result_stocks = result_stocks_dict.values()
+    for random_stock in random_stocks:
+        if user.is_following_stock(random_stock.get('id')):
+            continue
 
-        random.shuffle(result_stocks)
+        result_stocks.append(random_stock.to_json_dict())
+
+    random.shuffle(result_stocks)
 
     return result_stocks
 

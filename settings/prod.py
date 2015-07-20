@@ -13,7 +13,7 @@ HEADERS = {
     'X-Frame-Options': 'DENY',
     'X-XSS-Protection': '1; mode=block',
     #'Content-Security-Policy': "default-src 'self'",
-    'X-Content-Type-Options': 'nosniff'
+    'X-Content-Type-Options': 'nosniff',
 }
 
 # Security headers related to caching.
@@ -53,3 +53,5 @@ SESSION_EXPIRE_TIME = 5 * 24 * 60 * 60
 
 
 MYSQL_DB_NAME = 'stockinterest'
+
+WS_SENDGRID_API_KEY = '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'

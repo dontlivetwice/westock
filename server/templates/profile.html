@@ -1,4 +1,9 @@
 {% extends 'base.html' %}
+{% block head %}
+    <script type="text/javascript" src="/static/js/stockCard.js" ></script>
+    <script type="text/javascript" src="/static/js/drawChart.js" ></script>
+    <script type="text/javascript" src="/static/js/followStock.js" ></script>
+{% endblock %}
 
 {% block css %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,252 +36,27 @@
 {% block container %}
 {% set user_id = get_current_user_id() %}
 {% set interests_set = get_interest_flow_state(user_id) %}
-{% set stocks = get_stocks_for_user(user_id) %}
+<script>
+function scrollHandler(){
+	var stocks = document.getElementById('stocks');
+	var contentHeight = stocks.offsetHeight;
+	var yOffset = window.pageYOffset;
+	var y = yOffset + window.innerHeight;
 
-<div class="stock-list">
-    {% if stocks|length %}
-        <div class="container">
-            <div data-columns id="columns">
-            </div>
+	if(y >= contentHeight){
+		// Ajax call to get more dynamic data goes here
+		generateServerRequest(null, '/me/recommended/stocks/', 'GET', true, drawGrid);
+	}
+}
+window.onscroll = scrollHandler;
+</script>
+<div class="stock-list" id="stocks">
+    {% if interests_set %}
+        <div class="container" id="stockContainer">
         </div>
-
-        <script>
-            var grid = document.querySelector('#columns');
-
-            function addStockNode(ticker, name, time, about, is_owned, open, days_high, days_low, year_high, year_low,
-                volume, market_cap, pe_ratio, div_yield, change, change_percent, followers) {
-
-                var stockInfo = [open, volume, days_high, change_percent, days_low, market_cap, year_high, pe_ratio,
-                    year_low, div_yield];
-
-                var stockInfoStrings = ["OPEN", "VOLUME", "HIGH", "CHANGE", "LOW", "MKT CAP", "52 WK HIGH", "P/E RATIO",
-                    "52 WK LOW", "DIV/YIELD"];
-
-                var stock = document.createElement("div");
-                stock.className = "col-md-4";
-
-                var thumbnail = document.createElement("div");
-                thumbnail.className = "thumbnail"
-                stock.appendChild(thumbnail);
-
-                var chartDiv = document.createElement("div");
-                var chart = document.createElement('div');
-                chart.id = ticker+'Chart';
-                chartDiv.appendChild(chart);
-                thumbnail.appendChild(chartDiv);
-
-                var caption = document.createElement("div");
-                caption.className = "caption";
-                thumbnail.appendChild(caption);
-
-                var title = document.createElement("H4");
-                var text = document.createTextNode(ticker);
-                title.appendChild(text);
-                caption.appendChild(title);
-
-                var sub_title = document.createElement("H5");
-                var text = document.createTextNode(name);
-                sub_title.appendChild(text);
-                caption.appendChild(sub_title);
-
-                var timeDiv = document.createElement("H6");
-                var text = document.createTextNode(time);
-                timeDiv.appendChild(text);
-                caption.appendChild(timeDiv);
-
-                <!-- start stock card -->
-                var container = document.createElement("div");
-                container.className = "container-fluid stockCard";
-
-                for (var i = 0; i < stockInfo.length; i++) {
-                    stockInfo[i];
-
-                    if (i % 2 == 0) {
-                        var row = document.createElement("row");
-                        row.className = "row-fluid";
-                    }
-
-                    var col = document.createElement("div");
-
-                    if (i % 2 == 0) {
-                        col.className = "col-md-6 colCardLeft";
-                    } else {
-                        col.className = "col-md-6 colCardRight";
-                    }
-
-                    var valueDiv = document.createElement("P");
-                    valueDiv.className = 'text-left alignleft small';
-                    var text = document.createTextNode(stockInfoStrings[i] + ':');
-                    valueDiv.appendChild(text);
-                    col.appendChild(valueDiv);
-
-                    var valueDiv = document.createElement("P");
-                    valueDiv.className = 'text-right strong alignRight small';
-                    var text = document.createTextNode(stockInfo[i]);
-                    valueDiv.appendChild(text);
-                    col.appendChild(valueDiv);
-
-                    row.appendChild(col);
-
-                    if (i % 2 == 0) {
-                        container.appendChild(row);
-                    }
-                }
-
-                caption.appendChild(container);
-                <!-- end stock card -->
-
-                var aboutDiv = document.createElement("P");
-                aboutDiv.className = 'collapse';
-                var text = document.createTextNode(about);
-                aboutDiv.appendChild(text);
-                caption.appendChild(aboutDiv);
-
-                var ul = document.createElement("ul");
-                ul.className = 'list-inline'
-
-                var link = document.createElement("li");
-
-                var follow = document.createElement("A");
-                follow.className = 'btn btn-primary';
-                follow.id = ticker;
-                follow.value = is_owned;
-                follow.type = 'follow';
-
-                var text = 'Follow';
-
-                if (Boolean(is_owned)) {
-                    text = 'UnFollow';
-                }
-
-                textDiv = document.createTextNode(text);
-                follow.appendChild(textDiv);
-                link.appendChild(follow);
-                ul.appendChild(link);
-
-                var followerDiv = document.createElement("li");
-                var valueDiv = document.createElement("P");
-                valueDiv.className = 'text-right strong alignRight small';
-                var text = document.createTextNode(followers);
-                valueDiv.id = ticker + "Followers";
-                valueDiv.appendChild(text);
-                followerDiv.appendChild(valueDiv)
-                ul.appendChild(followerDiv);
-
-                var followerDiv = document.createElement("li");
-                var valueDiv = document.createElement("P");
-                valueDiv.className = 'text-right strong alignRight small';
-                var text = document.createTextNode(" Followers");
-                valueDiv.appendChild(text);
-                followerDiv.appendChild(valueDiv)
-                ul.appendChild(followerDiv);
-
-                caption.appendChild(ul);
-
-                var item = document.createElement('stock');
-                salvattore.appendElements(grid, [item]);
-                item.outerHTML = stock.outerHTML;
-            }
-
-            function followUnfollowStock() {
-                var req = new XMLHttpRequest();
-
-                req.onreadystatechange=function(evt) {
-                    if (req.readyState==4 && req.status==200) {
-                        var arrayResp = JSON.parse(req.response);
-
-                        var stock = document.getElementById(arrayResp.ticker);
-
-                        var count = 0;
-
-                        if (stock.text == "Follow") {
-                            stock.text = "UnFollow";
-                            count = 1;
-                        }
-                        else {
-                            stock.text = "Follow";
-                            count = -1;
-                        }
-
-                        var followers = document.getElementById(arrayResp.ticker+"Followers");
-                        followers.innerHTML = parseInt(followers.textContent) + count;
-                    }
-                    else if (req.readyState==4 && req.status!=200) {
-                        $('#errorModal').modal();
-                    }
-                  }
-
-                var data = new FormData();
-                data.append('ticker', this.id);
-                data.append('csrf_token', "{{ csrf_token() }}");
-
-                var method = '';
-
-                if (this.text == "Follow") {
-                    method = "POST";
-                }
-                else {
-                    method = "DELETE";
-                }
-
-                req.open(method, "/stocks/", true);
-                req.send(data);
-            }
-        </script>
-
-        <script src="/static/js/salvattore.min.js"></script>
-        <script>google.load('visualization', '1.1', {packages: ['line']});</script>
-	    {% for stock in stocks %}
         <script type="text/javascript">
-            ticker = "{{ stock.get('ticker') }}";
-            name = "{{ stock.get('name') }}";
-            time = "{{ stock.get('time') }}";
-            about = "{{ stock.get('about') }}";
-
-            open = "{{ stock.get_open() }}";
-            days_high = "{{ stock.get_days_high() }}";
-            days_low = "{{ stock.get_days_low() }}";
-            year_high = "{{ stock.get_year_high() }}";
-            year_low = "{{ stock.get_year_low() }}";
-            volume = "{{ stock.get_volume() }}";
-            market_cap = "{{ stock.get_market_cap() }}";
-            pe_ratio = "{{ stock.get_pe_ratio() }}";
-            div_yield = "{{ stock.get_div_yield() }}";
-            change = "{{ stock.get_change() }}";
-            change_percent = "{{ stock.get_change_percent() }}";
-            is_owned = "{{ stock.is_owned }}";
-            price = {{ stock.get_price() }};
-            followers = {{ stock.get_followers() }}
-
-            addStockNode(ticker, name, time, about, is_owned, open, days_high, days_low, year_high, year_low, volume,
-            market_cap, pe_ratio, div_yield, change, change_percent, followers);
-
-            google.setOnLoadCallback(drawChart());
-
-            function drawChart() {
-
-              var data = new google.visualization.DataTable();
-              data.addColumn('number', '');
-              data.addColumn('number', ticker);
-
-              data.addRows(price);
-
-              var options = {
-                legend: {position: 'none'},
-                curveType: 'function',
-                vAxis: { gridlines: { count: 2 } },
-                hAxis: {'baseline': 0, 'gridlines': {color: '#333', count: 0}},
-              };
-
-              var chart = new google.charts.Line(document.getElementById(ticker+"Chart"));
-
-              chart.draw(data, options);
-            }
-
-            var follow = document.getElementById(ticker);
-            follow.addEventListener("click", followUnfollowStock, true);
+            generateServerRequest(null, '/me/recommended/stocks/', 'GET', true, drawGrid);
         </script>
-        {% endfor %}
    {% else %}
     {% if not interests_set %}
         {% set interests = get_interest_list() %}

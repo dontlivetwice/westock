@@ -1,2 +1,4 @@
  MAILTO=akamel@ymail.com
  */5 6-12 * * 1,2,3,4,5 python /Users/amine/workspace/code/westock/cron_stocks.py >/dev/null
+ 00 12 * * 1,2,3,4,5 python /Users/amine/workspace/code/westock/announcement_job.py >/dev/null
+ 00 12 * * 1,2,3,4,5 python /Users/amine/workspace/code/westock/finance.py -d 2 >/dev/null

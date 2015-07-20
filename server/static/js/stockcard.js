@@ -1,105 +1,133 @@
-ticker = "{{ stock.get('ticker') }}";
-name = "{{ stock.get('name') }}";
-time = "{{ stock.get('time') }}";
-about = "{{ stock.get('about') }}";
 
-open = "{{ stock.get_open() }}";
-days_high = "{{ stock.get_days_high() }}";
-days_low = "{{ stock.get_days_low() }}";
-year_high = "{{ stock.get_year_high() }}";
-year_low = "{{ stock.get_year_low() }}";
-volume = "{{ stock.get_volume() }}";
-market_cap = "{{ stock.get_market_cap() }}";
-pe_ratio = "{{ stock.get_pe_ratio() }}";
-div_yield = "{{ stock.get_div_yield() }}";
-change = "{{ stock.get_change() }}";
-change_percent = "{{ stock.get_change_percent() }}";
-is_owned = "{{ stock.is_owned }}";
+function addStockNode(ticker, name, time, about, is_owned, open, days_high, days_low, year_high, year_low,
+    volume, market_cap, pe_ratio, div_yield, change, change_percent, followers) {
 
-addStockNode(ticker, name, time, about, is_owned, open, days_high, days_low, year_high, year_low, volume,
-market_cap, pe_ratio, div_yield, change, change_percent);
+    var stockInfo = [open, volume, days_high, change_percent, days_low, market_cap, year_high, pe_ratio,
+        year_low, div_yield];
 
-if (change <= 0) {
-    var data = {
-        labels: {{ stock.get_price_labels() }},
-        datasets: [
-            {
-                label: ticker,
-                fillColor: "rgba(151,187,205,0.2)",
-                strokeColor: "#d10808",
-                pointColor: "#d10808",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#fff",
-                pointHighlightStroke: "rgba(151,187,205,1)",
-                data: {{ stock.get_price_values() }}
-            }
-        ]
-    };
-} else {
-     var data = {
-        labels: {{ stock.get_price_labels() }},
-        datasets: [
-            {
-                label: ticker,
-                fillColor: "rgba(151,187,205,0.2)",
-                strokeColor: "#099422",
-                pointColor: "#099422",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#fff",
-                pointHighlightStroke: "rgba(151,187,205,1)",
-                data: {{ stock.get_price_values() }}
-            }
-        ]
-    };
+    var stockInfoStrings = ["OPEN", "VOLUME", "HIGH", "CHANGE", "LOW", "MKT CAP", "52 WK HIGH", "P/E RATIO",
+        "52 WK LOW", "DIV/YIELD"];
+
+    var stock = document.createElement("div");
+    stock.className = "col-md-4";
+
+    var thumbnail = document.createElement("div");
+    thumbnail.className = "thumbnail"
+    stock.appendChild(thumbnail);
+
+    var chartDiv = document.createElement("div");
+    var chart = document.createElement('div');
+    chart.id = ticker+'Chart';
+    chartDiv.appendChild(chart);
+    thumbnail.appendChild(chartDiv);
+
+    var caption = document.createElement("div");
+    caption.className = "caption";
+    thumbnail.appendChild(caption);
+
+    var title = document.createElement("H4");
+    var text = document.createTextNode(ticker);
+    title.appendChild(text);
+    caption.appendChild(title);
+
+    var sub_title = document.createElement("H5");
+    var text = document.createTextNode(name);
+    sub_title.appendChild(text);
+    caption.appendChild(sub_title);
+
+    var timeDiv = document.createElement("H6");
+    var text = document.createTextNode(time);
+    timeDiv.appendChild(text);
+    caption.appendChild(timeDiv);
+
+    <!-- start stock card -->
+    var container = document.createElement("div");
+    container.className = "container-fluid stockCard";
+
+    for (var i = 0; i < stockInfo.length; i++) {
+        stockInfo[i];
+
+        if (i % 2 == 0) {
+            var row = document.createElement("row");
+            row.className = "row-fluid";
+        }
+
+        var col = document.createElement("div");
+
+        if (i % 2 == 0) {
+            col.className = "col-md-6 colCardLeft";
+        } else {
+            col.className = "col-md-6 colCardRight";
+        }
+
+        var valueDiv = document.createElement("P");
+        valueDiv.className = 'text-left alignleft small';
+        var text = document.createTextNode(stockInfoStrings[i] + ':');
+        valueDiv.appendChild(text);
+        col.appendChild(valueDiv);
+
+        var valueDiv = document.createElement("P");
+        valueDiv.className = 'text-right strong alignRight small';
+        var text = document.createTextNode(stockInfo[i]);
+        valueDiv.appendChild(text);
+        col.appendChild(valueDiv);
+
+        row.appendChild(col);
+
+        if (i % 2 == 0) {
+            container.appendChild(row);
+        }
+    }
+
+    caption.appendChild(container);
+    <!-- end stock card -->
+
+    var aboutDiv = document.createElement("P");
+    aboutDiv.className = 'collapse';
+    var text = document.createTextNode(about);
+    aboutDiv.appendChild(text);
+    caption.appendChild(aboutDiv);
+
+    var ul = document.createElement("ul");
+    ul.className = 'list-inline'
+
+    var link = document.createElement("li");
+
+    var follow = document.createElement("A");
+    follow.className = 'btn btn-primary';
+    follow.id = ticker;
+    follow.value = is_owned;
+    follow.type = 'follow';
+
+    var text = 'Follow';
+
+    if (Boolean(is_owned)) {
+        text = 'UnFollow';
+    }
+
+    textDiv = document.createTextNode(text);
+    follow.appendChild(textDiv);
+    link.appendChild(follow);
+    ul.appendChild(link);
+
+    var followerDiv = document.createElement("li");
+    var valueDiv = document.createElement("P");
+    valueDiv.className = 'text-right strong alignRight small';
+    var text = document.createTextNode(followers);
+    valueDiv.id = ticker + "Followers";
+    valueDiv.appendChild(text);
+    followerDiv.appendChild(valueDiv)
+    ul.appendChild(followerDiv);
+
+    var followerDiv = document.createElement("li");
+    var valueDiv = document.createElement("P");
+    valueDiv.className = 'text-right strong alignRight small';
+    var text = document.createTextNode(" Followers");
+    valueDiv.appendChild(text);
+    followerDiv.appendChild(valueDiv)
+    ul.appendChild(followerDiv);
+
+    caption.appendChild(ul);
+    var container = document.getElementById('stockContainer');
+    container.appendChild(stock);
 }
-
-// Get the context of the canvas element we want to select
-var ctx = document.getElementById(ticker+'Chart').getContext("2d");
-
-var options = {
-    ///Boolean - Whether grid lines are shown across the chart
-    scaleShowGridLines : true,
-
-    //String - Colour of the grid lines
-    scaleGridLineColor : "rgba(0,0,0,.05)",
-
-    //Number - Width of the grid lines
-    scaleGridLineWidth : 1,
-
-    //Boolean - Whether to show horizontal lines (except X axis)
-    scaleShowHorizontalLines: true,
-
-    //Boolean - Whether to show vertical lines (except Y axis)
-    scaleShowVerticalLines: true,
-
-    //Boolean - Whether the line is curved between points
-    bezierCurve : true,
-
-    //Number - Tension of the bezier curve between points
-    bezierCurveTension : 0.4,
-
-    //Boolean - Whether to show a dot for each point
-    pointDot : false,
-
-    //Number - Radius of each point dot in pixels
-    pointDotRadius : 4,
-
-    //Number - Pixel width of point dot stroke
-    pointDotStrokeWidth : 1,
-
-    //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
-    pointHitDetectionRadius : 20,
-
-    //Boolean - Whether to show a stroke for datasets
-    datasetStroke : false,
-
-    //Number - Pixel width of dataset stroke
-    datasetStrokeWidth : 2,
-
-    //Boolean - Whether to fill the dataset with a colour
-    datasetFill : false,
-};
-var chart = new Chart(ctx).Line(data, options);
-
-var follow = document.getElementById(ticker);
-follow.addEventListener("click", followUnfollowStock, true);

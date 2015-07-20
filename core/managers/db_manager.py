@@ -8,6 +8,7 @@ class DBManagerException():
 class DBManager(object):
     def __init__(self, db_name):
         self.db = MySQLdb.connect(user='db_user', passwd='db_pass', db='stockinterest')
+        self.db.autocommit(True)
         self.cursor = self.db.cursor()
         self.table_name = 'stockinterest.%s' % db_name
         self.CREATE_TEMPLATE = '''INSERT INTO ''' + self.table_name

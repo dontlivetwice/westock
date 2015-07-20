@@ -17,9 +17,13 @@ class StockManager(Manager):
         if stock:
             about = stock.get('about')
             if about:
-                about = about.decode('ascii', errors='ignore')
+                about = about.encode('ascii', errors='ignore')
 
-            return (Time.get_utc_time(), stock.get('ticker'), stock.get('name'), about, stock.get('time'),
+            name = stock.get('name')
+            if name:
+                name = name.encode('ascii', errors='ignore')
+
+            return (Time.get_utc_time(), stock.get('ticker'), name, about, stock.get('time'),
                     stock.get('followers'), json.dumps(stock.get('body')), stock.get('interest_id', 1))
 
         return ()
@@ -33,9 +37,9 @@ class StockManager(Manager):
             count = 0
 
             for var in obj:
-                if Stock.DB_MAPPINGS[count] == 'about' and var is not None:
+                if Stock.DB_MAPPINGS[count] in ['about', 'name'] and var is not None:
                     try:
-                        var = var.encode('ascii', errors='ignore')
+                        var = var.decode('ascii', errors='ignore')
                     except:
                         pass
 
