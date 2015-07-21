@@ -1,12 +1,13 @@
 
-function followUnfollowStock(obj, csrf_token) {
+function followUnfollowStock(evt, obj, csrf_token) {
+    evt.stopPropagation();
     var req = new XMLHttpRequest();
 
     req.onreadystatechange=function(evt) {
         if (req.readyState==4 && req.status==200) {
             var arrayResp = JSON.parse(req.response);
 
-            var stock = document.getElementById(arrayResp.ticker);
+            var stock = document.getElementById(arrayResp.data);
 
             var count = 0;
 
@@ -19,7 +20,7 @@ function followUnfollowStock(obj, csrf_token) {
                 count = -1;
             }
 
-            var followers = document.getElementById(arrayResp.ticker+"Followers");
+            var followers = document.getElementById(arrayResp.data+"Followers");
             followers.innerHTML = parseInt(followers.textContent) + count;
         }
         else if (req.readyState==4 && req.status!=200) {
@@ -74,7 +75,7 @@ function drawGrid(stocks, is_owned){
             google.setOnLoadCallback(drawChart(ticker, prices));
 
             var follow = document.getElementById(ticker);
-            follow.addEventListener("click", function(){followUnfollowStock(this, "{{ csrf_token() }}")}, true);
+            follow.addEventListener("click", function(){followUnfollowStock(window.event, this, "{{ csrf_token() }}")}, true);
         }
     }
 }

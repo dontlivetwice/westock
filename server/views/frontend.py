@@ -185,6 +185,7 @@ def get_stocks():
         return construct_response(e)
 
 
+@csrf.exempt
 @app.route('/me/following/stocks/', methods=['POST'])
 def follow_stock():
     """Follow stock
@@ -203,6 +204,7 @@ def follow_stock():
         return construct_response(e, None)
 
 
+@csrf.exempt
 @app.route('/me/following/stocks/<stock_id>', methods=['DELETE'])
 def unfollow_stock(stock_id):
     """Unfollow stock
