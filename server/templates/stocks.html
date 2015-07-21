@@ -10,45 +10,11 @@
 {% endblock %}
 
 {% block container %}
-{% set stocks = get_stocks_for_user(get_current_user_id()) %}
 <div class="stock-list">
-    {% if stocks|length %}
         <div class="container" id="stockContainer">
         </div>
-
-	    {% for stock in stocks %}
         <script type="text/javascript">
-            {% autoescape off %}
-            ticker = "{{ stock.get('ticker') }}";
-            name = "{{ stock.get('name') }}";
-            time = "{{ stock.get('time') }}";
-            about = "{{ stock.get('about') }}";
-
-            open = "{{ stock.get_open() }}";
-            days_high = "{{ stock.get_days_high() }}";
-            days_low = "{{ stock.get_days_low() }}";
-            year_high = "{{ stock.get_year_high() }}";
-            year_low = "{{ stock.get_year_low() }}";
-            volume = "{{ stock.get_volume() }}";
-            market_cap = "{{ stock.get_market_cap() }}";
-            pe_ratio = "{{ stock.get_pe_ratio() }}";
-            div_yield = "{{ stock.get_div_yield() }}";
-            change = "{{ stock.get_change() }}";
-            change_percent = "{{ stock.get_change_percent() }}";
-            is_owned = "{{ stock.is_owned }}";
-            followers = {{ stock.get_followers() }};
-            prices = {{ stock.get_price() }};
-            {% endautoescape %}
-
-            addStockNode(ticker, name, time, about, is_owned, open, days_high, days_low, year_high, year_low, volume,
-            market_cap, pe_ratio, div_yield, change, change_percent, followers);
-
-            google.setOnLoadCallback(drawChart(ticker, prices));
-
-            var follow = document.getElementById(ticker);
-            follow.addEventListener("click", followUnfollowStock, true);
+            generateServerRequest(null, '/me/stocks/', 'GET', true, drawGrid, true);
         </script>
-        {% endfor %}
-    {% endif %}
 </div>
 {% endblock %}

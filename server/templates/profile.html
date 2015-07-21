@@ -45,7 +45,7 @@ function scrollHandler(){
 
 	if(y >= contentHeight){
 		// Ajax call to get more dynamic data goes here
-		generateServerRequest(null, '/me/recommended/stocks/', 'GET', true, drawGrid);
+		generateServerRequest(null, '/me/recommended/stocks/', 'GET', true, drawGrid, false);
 	}
 }
 window.onscroll = scrollHandler;
@@ -55,7 +55,7 @@ window.onscroll = scrollHandler;
         <div class="container" id="stockContainer">
         </div>
         <script type="text/javascript">
-            generateServerRequest(null, '/me/recommended/stocks/', 'GET', true, drawGrid);
+            generateServerRequest(null, '/me/recommended/stocks/', 'GET', true, drawGrid, false);
         </script>
    {% else %}
     {% if not interests_set %}

@@ -34,17 +34,19 @@ function followUnfollowStock(obj, csrf_token) {
     var method = '';
 
     if (obj.text == "Follow") {
-        method = "POST";
+        method = 'POST';
+        url = '/me/following/stocks/'
     }
     else {
-        method = "DELETE";
+        method = 'DELETE';
+        url = '/me/following/stocks/'+obj.id
     }
 
-    req.open(method, "/stocks/", true);
+    req.open(method, url, true);
     req.send(data);
 }
 
-function drawGrid(stocks){
+function drawGrid(stocks, is_owned){
     if (stocks != null) {
         for (i = 0; i < stocks.length; i++) {
             ticker = stocks[i].ticker;
@@ -66,7 +68,7 @@ function drawGrid(stocks){
             followers = stocks[i].followers;
             prices = stocks[i].prices;
 
-            addStockNode(ticker, name, time, about, true, open, days_high, days_low, year_high, year_low, volume,
+            addStockNode(ticker, name, time, about, is_owned, open, days_high, days_low, year_high, year_low, volume,
             market_cap, pe_ratio, div_yield, change, change_percent, followers);
 
             google.setOnLoadCallback(drawChart(ticker, prices));
@@ -77,13 +79,13 @@ function drawGrid(stocks){
     }
 }
 
-function generateServerRequest(data, url, method, async, callback) {
+function generateServerRequest(data, url, method, async, callback, args) {
     var req = new XMLHttpRequest();
 
     req.onreadystatechange=function(evt) {
         if (req.readyState==4 && req.status==200) {
             var arrayResp = JSON.parse(req.response);
-            callback(arrayResp.data)
+            callback(arrayResp.data, args)
         }
         else if (req.readyState==4 && req.status!=200) {
             $('#errorModal').modal();
