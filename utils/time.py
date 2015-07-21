@@ -38,7 +38,7 @@ class Time(object):
         hours = hours.replace(':', '.')
         delta = 0
 
-        if float(hours) >= 0 and float(hours) <= 6.30:
+        if float(hours) >= 0 and float(hours) <= 13.30:
             delta = 1
 
         if day_of_week == 0:
