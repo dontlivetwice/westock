@@ -195,17 +195,17 @@ def follow_stock():
     if not user_id:
         raise exceptions.AuthenticationFailed()
 
-    ticker = request.form.get('ticker').encode('utf-8')
+    stock_id = request.form.get('ticker').encode('utf-8')
 
     try:
-        stock_handler.add_stock_for_user(user_id, ticker)
-        return construct_response(200, ticker)
+        stock_handler.add_stock_for_user(user_id, stock_id)
+        return construct_response(200, stock_id)
     except exceptions.FollowStockFailed as e:
         return construct_response(e, None)
 
 
 @csrf.exempt
-@app.route('/me/following/stocks/<stock_id>', methods=['DELETE'])
+@app.route('/me/following/stocks/<int:stock_id>', methods=['DELETE'])
 def unfollow_stock(stock_id):
     """Unfollow stock
     """

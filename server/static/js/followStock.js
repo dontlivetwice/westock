@@ -50,6 +50,7 @@ function followUnfollowStock(evt, obj, csrf_token) {
 function drawGrid(stocks, is_owned){
     if (stocks != null) {
         for (i = 0; i < stocks.length; i++) {
+            id = stocks[i].id;
             ticker = stocks[i].ticker;
             name = stocks[i].name;
             time = stocks[i].time;
@@ -69,12 +70,12 @@ function drawGrid(stocks, is_owned){
             followers = stocks[i].followers;
             prices = stocks[i].prices;
 
-            addStockNode(ticker, name, time, about, is_owned, open, days_high, days_low, year_high, year_low, volume,
+            addStockNode(id, ticker, name, time, about, is_owned, open, days_high, days_low, year_high, year_low, volume,
             market_cap, pe_ratio, div_yield, change, change_percent, followers);
 
             google.setOnLoadCallback(drawChart(ticker, prices));
 
-            var follow = document.getElementById(ticker);
+            var follow = document.getElementById(id);
             follow.addEventListener("click", function(){followUnfollowStock(window.event, this, "{{ csrf_token() }}")}, true);
         }
     }

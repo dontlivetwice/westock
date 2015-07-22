@@ -1,5 +1,5 @@
 
-function addStockNode(ticker, name, time, about, is_owned, open, days_high, days_low, year_high, year_low,
+function addStockNode(id, ticker, name, time, about, is_owned, open, days_high, days_low, year_high, year_low,
     volume, market_cap, pe_ratio, div_yield, change, change_percent, followers) {
 
     var stockInfo = [open, volume, days_high, change_percent, days_low, market_cap, year_high, pe_ratio,
@@ -95,7 +95,7 @@ function addStockNode(ticker, name, time, about, is_owned, open, days_high, days
 
     var follow = document.createElement("A");
     follow.className = 'btn btn-primary';
-    follow.id = ticker;
+    follow.id = id;
     follow.value = is_owned;
     follow.type = 'follow';
 
@@ -114,7 +114,7 @@ function addStockNode(ticker, name, time, about, is_owned, open, days_high, days
     var valueDiv = document.createElement("P");
     valueDiv.className = 'text-right strong alignRight small';
     var text = document.createTextNode(followers);
-    valueDiv.id = ticker + "Followers";
+    valueDiv.id = id + "Followers";
     valueDiv.appendChild(text);
     followerDiv.appendChild(valueDiv)
     ul.appendChild(followerDiv);

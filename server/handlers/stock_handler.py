@@ -44,7 +44,7 @@ def get_recommended_stocks_for_user(user_id):
     return result_stocks
 
 
-def add_stock_for_user(user_id, stock):
+def add_stock_for_user(user_id, stock_id):
     # 1. get the user
     user = base.managers.user_manager.get_one(id=user_id)
 
@@ -52,7 +52,7 @@ def add_stock_for_user(user_id, stock):
         raise exceptions.AuthenticationFailed()
 
     # 2. add stock to user
-    stock = base.managers.stock_manager.get_one(ticker=stock)
+    stock = base.managers.stock_manager.get_one(stock_id)
 
     try:
         # add the stock to the user
@@ -75,7 +75,7 @@ def add_stock_for_user(user_id, stock):
         raise exceptions.FollowStockFailed()
 
 
-def delete_stock_for_user(user_id, stock):
+def delete_stock_for_user(user_id, stock_id):
     # 1. get the user
     user = base.managers.user_manager.get_one(id=user_id)
 
@@ -83,7 +83,7 @@ def delete_stock_for_user(user_id, stock):
         raise exceptions.AuthenticationFailed()
 
     # 2. add stock to user
-    stock = base.managers.stock_manager.get_one(ticker=stock)
+    stock = base.managers.stock_manager.get_one(stock_id)
 
     try:
         ret = user.delete_stock_from_user(stock.get('id'))
