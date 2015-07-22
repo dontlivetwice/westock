@@ -63,7 +63,7 @@ class User(core.models.base.Model):
 
         for user_stock in users_stocks:
             stock_id = user_stock.get('stock_id')
-            stock = self.stock_manager.get_one(id=stock_id)
+            stock = self.stock_manager.get_one(stock_id)
 
             # remove this hack
             stock.is_owned = True

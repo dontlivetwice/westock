@@ -21,6 +21,10 @@ class Manager(object):
         """ Deserializes the passed in object """
         raise NotImplementedError
 
+    @classmethod
+    def _derive_key(cls, prefix, key):
+        return "%s:%s" % (prefix, key)
+
     def add_one(self, obj):
         """ Adds the passed in object to the DB
             sub classes should implement this """

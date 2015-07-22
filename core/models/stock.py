@@ -208,6 +208,7 @@ class Stock(Model):
     def to_json_dict(self):
         model_dict = collections.OrderedDict()
 
+        model_dict.update({'id': self.get('id')})
         model_dict.update({'ticker': self.get('ticker')})
         model_dict.update({'name': self.get('name')})
         model_dict.update({'time': self.get('time')})

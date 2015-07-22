@@ -51,7 +51,13 @@ SECRET_KEY = '\xda\xbetl\xa4Nr\x17\xd7\xd1E\xed"\xee\x02\r\x0e\xe8]\x9bl\xf3\r\x
 # Expiration time of 5 days
 SESSION_EXPIRE_TIME = 5 * 24 * 60 * 60 
 
-
-MYSQL_DB_NAME = 'stockinterest'
-
 WS_SENDGRID_API_KEY = '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'
+
+WS_DB_USER = 'db_user'
+WS_DB_PASSWORD = 'db_pass'
+WS_DB_NAME = 'stockinterest'
+
+WS_MEMCACHE_SERVER = '127.0.0.1'
+WS_MEMCACHE_PORT = '11211'
+WS_MEMCACHE_DEBUG = False
+WS_MEMCACHE_EXPIRATION = 3600

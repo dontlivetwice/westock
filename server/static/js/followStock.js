@@ -81,6 +81,7 @@ function drawGrid(stocks, is_owned){
 }
 
 function generateServerRequest(data, url, method, async, callback, args) {
+    //window.event.stopPropagation();
     var req = new XMLHttpRequest();
 
     req.onreadystatechange=function(evt) {
